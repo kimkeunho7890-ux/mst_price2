@@ -138,7 +138,7 @@ async function checkExistingSession(){
 async function login(email, password){
   state.loginError = "";
   try{
-    await account.createEmailPasswordSession({ email, password });
+    await account.createEmailPasswordSession(email, password);
     state.loggedIn = true;
     state.screen = "panel";
     render();
@@ -150,7 +150,7 @@ async function login(email, password){
 }
 
 async function logout(){
-  try{ await account.deleteSession({ sessionId: "current" }); } catch(e){}
+  try{ await account.deleteSession("current"); } catch(e){}
   state.loggedIn = false;
   state.screen = "login";
   render();
@@ -161,7 +161,7 @@ async function loadBucketFiles(bucketId){
   state.bucketError = "";
   render();
   try{
-    const res = await storage.listFiles({ bucketId });
+    const res = await storage.listFiles(bucketId);
     state.filesByBucket[bucketId] = (res && res.files) || [];
     state.loadingBucket = false;
     render();
@@ -181,9 +181,9 @@ async function uploadFiles(bucketId, fileList){
     for(const file of Array.from(fileList)){
       const dup = existing.find(f => f.name === file.name);
       if(dup){
-        await storage.deleteFile({ bucketId, fileId: dup.$id });
+        await storage.deleteFile(bucketId, dup.$id);
       }
-      await storage.createFile({ bucketId, fileId: ID.unique(), file });
+      await storage.createFile(bucketId, ID.unique(), file);
     }
     await loadBucketFiles(bucketId);
   } catch(e){
@@ -196,7 +196,7 @@ async function uploadFiles(bucketId, fileList){
 async function deleteFile(bucketId, fileId){
   if(!confirm("이 파일을 삭제하시겠어요? 되돌릴 수 없습니다.")) return;
   try{
-    await storage.deleteFile({ bucketId, fileId });
+    await storage.deleteFile(bucketId, fileId);
     await loadBucketFiles(bucketId);
   } catch(e){
     state.bucketError = "삭제 중 오류가 발생했습니다: " + (e.message || e);
@@ -210,12 +210,12 @@ async function sendAnnouncement(){
   state.noticeStatus = "발송 중...";
   render();
   try{
-    await databases.createDocument({
-      databaseId: APPWRITE_DATABASE_ID,
-      collectionId: APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
-      documentId: ID.unique(),
-      data: { message: text, createdAt: new Date().toISOString() },
-    });
+    await databases.createDocument(
+      APPWRITE_DATABASE_ID,
+      APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
+      ID.unique(),
+      { message: text, createdAt: new Date().toISOString() }
+    );
     state.noticeStatus = "발송 완료! 접속 중인 사용자에게 알림이 표시됩니다.";
     state.noticeText = "";
   } catch(e){
