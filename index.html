@@ -1412,29 +1412,21 @@ function wireAllModelsResultsBody(){
   });
 }
 
-// "07월27일 1600 이후_공지_A.png" 형식 — 선택한 정책 적용일의 월/일/시각 + 계정 구분(A~E1)으로 매칭
-function buildNoticeImageKey(dataset, gubun){
+// "08월18일 이후_공지_A" 또는 "07월27일 1600 이후_공지_A" 둘 다 매칭 —
+// 시각(HHMM)은 있어도 없어도 되고, 월/일 + 구분(A~E1)만 정확히 맞으면 된다.
+function findNoticeImageFile(dataset, gubun){
   if(!dataset || !gubun) return null;
   const sk = dataset.sortKey;
-  const mm = sk.slice(4,6), dd = sk.slice(6,8), hhmm = sk.slice(8,12);
-  return `${mm}월${dd}일 ${hhmm} 이후_공지_${gubun}`;
-}
-function findNoticeImageFile(dataset, gubun){
-  const key = buildNoticeImageKey(dataset, gubun);
-  if(!key) return null;
-  return state.noticeImgFiles.find(f => f.name.startsWith(key)) || null;
+  const mm = sk.slice(4,6), dd = sk.slice(6,8);
+  const re = new RegExp(`^${mm}월${dd}일(?:\\s*\\d{3,4})?\\s*이후_공지_${gubun}(?:[^0-9A-Za-z]|$)`);
+  return state.noticeImgFiles.find(f => re.test(f.name)) || null;
 }
 
-// "(공지용)통합단가표20260818_1400.xlsx" 형식 — 파일명 안의 날짜_시각 숫자와 정책 적용일이 일치하는 파일을 찾는다
-function buildPriceFileKey(dataset){
-  if(!dataset) return null;
-  const sk = dataset.sortKey;
-  return `${sk.slice(0,8)}_${sk.slice(8,12)}`;
-}
+// "(공지용)통합단가표_20260818" 또는 "...20260818_1400" 둘 다 매칭 — 날짜(YYYYMMDD)만 일치하면 된다.
 function findPriceDownloadFile(dataset){
-  const key = buildPriceFileKey(dataset);
-  if(!key) return null;
-  return state.priceFileList.find(f => f.name.includes(key)) || null;
+  if(!dataset) return null;
+  const dateOnly = dataset.sortKey.slice(0, 8);
+  return state.priceFileList.find(f => f.name.includes(dateOnly)) || null;
 }
 
 function downloadNoticeImage(){
