@@ -1162,7 +1162,7 @@ function renderStaticTabBody(tabKey, account){
       return `<div class="card"><div class="empty">기타 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
     }
     return `<div class="card"><div class="buga-row" style="border-top:none;padding-top:0;margin-top:0">
-      ${state.etcImages.map(src => `<img src="${src}" alt="기타 정책" />`).join("")}
+      ${state.etcImages.map(src => `<img loading="lazy" decoding="async" src="${src}" alt="기타 정책" />`).join("")}
     </div></div>`;
   }
   if(tabKey === "wired" || tabKey === "sono"){
@@ -1172,13 +1172,13 @@ function renderStaticTabBody(tabKey, account){
     if(!img){
       return `<div class="card"><div class="empty">${labels[tabKey]} 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
     }
-    return `<div class="card"><img src="${img}" alt="${labels[tabKey]} 정책" style="width:100%;border-radius:8px;display:block" /></div>`;
+    return `<div class="card"><img loading="lazy" decoding="async" src="${img}" alt="${labels[tabKey]} 정책" style="width:100%;border-radius:8px;display:block" /></div>`;
   }
   const img = state.images[tabKey];
   if(!img){
     return `<div class="card"><div class="empty">${labels[tabKey] || ""} 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
   }
-  return `<div class="card"><img src="${img}" alt="${labels[tabKey] || ""} 정책" style="width:100%;border-radius:8px;display:block" /></div>`;
+  return `<div class="card"><img loading="lazy" decoding="async" src="${img}" alt="${labels[tabKey] || ""} 정책" style="width:100%;border-radius:8px;display:block" /></div>`;
 }
 
 function renderPlanButtonRows(){
@@ -1211,7 +1211,7 @@ function renderMobileResultsBody(){
     </div>
     ${state.bugaImages.length ? `
     <div class="buga-row">
-      ${state.bugaImages.map(src => `<img src="${src}" alt="부가 안내" />`).join("")}
+      ${state.bugaImages.map(src => `<img loading="lazy" decoding="async" src="${src}" alt="부가 안내" />`).join("")}
     </div>` : ""}
   `;
 }
@@ -1330,7 +1330,7 @@ function renderAllModelsResultsBody(){
     </div>
     ${state.bugaImages.length ? `
     <div class="buga-row">
-      ${state.bugaImages.map(src => `<img src="${src}" alt="부가 안내" />`).join("")}
+      ${state.bugaImages.map(src => `<img loading="lazy" decoding="async" src="${src}" alt="부가 안내" />`).join("")}
     </div>` : ""}
   `;
 }
@@ -1741,7 +1741,7 @@ function renderNoticeModal(){
           <h1>${notice.title || "오늘의 알림"}</h1>
           <button class="btn btn-ghost" id="noticeCloseBtn">닫기</button>
         </div>
-        ${img ? `<img src="${img}" alt="공지 이미지" style="width:100%;border-radius:8px;margin-bottom:14px;display:block" />` : ""}
+        ${img ? `<img loading="lazy" decoding="async" src="${img}" alt="공지 이미지" style="width:100%;border-radius:8px;margin-bottom:14px;display:block" />` : ""}
         ${notice.content ? `<p class="sub" style="white-space:pre-wrap">${notice.content}</p>` : ""}
         <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);margin-top:10px;cursor:pointer">
           <input type="checkbox" id="noticeDismissCheckbox" /> 오늘 하루 보지 않기
