@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단가표 관리자</title>
+<!-- Appwrite Web SDK. index.html과 같은 버전을 쓰세요. 서버 버전과 다르면 API가 살짝 다를 수 있습니다. -->
+<script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2"></script>
+<style>
+  :root{
+    --bg:#F3F4F7; --panel:#FFFFFF; --border:#E2E4EA; --border-strong:#CBD0DA;
+    --text:#181B21; --text-2:#5B616E; --text-3:#8A8F99;
+    --accent:#2455D0; --accent-dark:#173C99; --accent-bg:#EAF0FD;
+    --danger:#C0392B; --danger-bg:#FBEAE8;
+    --ok:#1D8A6C; --ok-bg:#E7F5EF;
+    --sans:-apple-system,BlinkMacSystemFont,"Pretendard","Segoe UI","Malgun Gothic",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--text);}
+  #app{max-width:960px;margin:0 auto;padding:24px 20px 60px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{width:34px;height:34px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;}
+  .brand-title{font-size:17px;font-weight:700;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;}
+  .card + .card{margin-top:16px;}
+  h1{font-size:19px;margin:0 0 4px;}
+  .sub{color:var(--text-2);font-size:13px;margin:0 0 16px;line-height:1.6;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--text-2);margin-bottom:6px;}
+  input[type=text],input[type=email],input[type=password],textarea{
+    width:100%;padding:10px 12px;border:1px solid var(--border-strong);border-radius:8px;
+    font-size:14px;font-family:var(--sans);background:#fff;color:var(--text);
+  }
+  textarea{min-height:90px;resize:vertical;}
+  .btn{
+    appearance:none;border:1px solid var(--border-strong);background:#fff;color:var(--text);
+    padding:9px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);
+  }
+  .btn:hover{background:#F7F8FA;}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn-primary:hover{background:var(--accent-dark);}
+  .btn-primary:disabled{background:#B9C4DD;border-color:#B9C4DD;cursor:not-allowed;}
+  .btn-danger{color:var(--danger);border-color:#F0C4BF;background:var(--danger-bg);}
+  .btn-danger:hover{background:#F6D9D5;}
+  .btn-ghost{border-color:transparent;background:transparent;color:var(--text-2);}
+  .err{background:var(--danger-bg);color:var(--danger);border:1px solid #F0C4BF;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;font-weight:600;}
+  .ok-msg{background:var(--ok-bg);color:var(--ok);border:1px solid #BFE3D3;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;font-weight:600;}
+  .login-wrap{max-width:360px;margin:60px auto 0;}
+  .tab-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+  .tab-btn{
+    appearance:none;border:1px solid var(--border-strong);background:#fff;color:var(--text-2);
+    padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);
+  }
+  .tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px;}
+  thead th{text-align:left;font-size:11px;color:var(--text-3);font-weight:700;padding:8px 6px;border-bottom:2px solid var(--border-strong);text-transform:uppercase;letter-spacing:.03em;}
+  tbody td{padding:9px 6px;border-bottom:1px solid var(--border);}
+  tbody td.num{text-align:right;font-family:var(--mono);color:var(--text-2);}
+  .empty{text-align:center;padding:30px 20px;color:var(--text-3);font-size:13px;}
+  .file-drop{border:1.5px dashed var(--border-strong);border-radius:10px;padding:18px;text-align:center;background:#FAFBFC;margin-bottom:16px;}
+  .file-drop input{font-size:13px;}
+  .spinner-note{font-size:12px;color:var(--text-2);margin-top:8px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ---- 배포 시 아래 값들을 본인 Appwrite 프로젝트에 맞게 수정하세요 (index.html과 동일해야 합니다) ----
+const APPWRITE_ENDPOINT = "https://api.kim-gwajang.com/v1";
+const APPWRITE_PROJECT_ID = "6a83fa550021213835d6";
+const APPWRITE_DATABASE_ID = "pricing-site";
+const APPWRITE_ANNOUNCEMENTS_COLLECTION_ID = "announcements";
+const BUCKETS = [
+  { key: "login", label: "로그인 파일" },
+  { key: "price", label: "단가표" },
+  { key: "grouping", label: "요금제 매칭" },
+  { key: "support", label: "지원금" },
+  { key: "home", label: "유선" },
+  { key: "jungo", label: "중고" },
+  { key: "sono", label: "소노" },
+  { key: "buga", label: "부가 이미지" },
+  { key: "etc", label: "기타" },
+  { key: "notice", label: "공지" },
+];
+
+const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
+const account = new Appwrite.Account(client);
+const storage = new Appwrite.Storage(client);
+const databases = new Appwrite.Databases(client);
+const ID = Appwrite.ID;
+
+let state = {
+  screen: "login",
+  loginError: "",
+  loggedIn: false,
+  activeBucket: BUCKETS[0].key,
+  filesByBucket: {},
+  loadingBucket: false,
+  bucketError: "",
+  uploadBusy: false,
+  noticeText: "",
+  noticeStatus: "",
+};
+
+function fmtSize(bytes){
+  if(bytes < 1024) return bytes + " B";
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+  return (bytes/1024/1024).toFixed(2) + " MB";
+}
+function getFileSize(f){
+  if(typeof f.sizeOriginal === "number") return f.sizeOriginal;
+  if(typeof f.size === "number") return f.size;
+  return 0;
+}
+function fmtDate(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+
+async function checkExistingSession(){
+  try{
+    await account.get();
+    state.loggedIn = true;
+    state.screen = "panel";
+    render();
+    loadBucketFiles(state.activeBucket);
+  } catch(e){
+    state.loggedIn = false;
+    state.screen = "login";
+    render();
+  }
+}
+
+async function login(email, password){
+  state.loginError = "";
+  try{
+    await account.createEmailPasswordSession({ email, password });
+    state.loggedIn = true;
+    state.screen = "panel";
+    render();
+    loadBucketFiles(state.activeBucket);
+  } catch(e){
+    state.loginError = "로그인에 실패했습니다: " + (e.message || e);
+    render();
+  }
+}
+
+async function logout(){
+  try{ await account.deleteSession({ sessionId: "current" }); } catch(e){}
+  state.loggedIn = false;
+  state.screen = "login";
+  render();
+}
+
+async function loadBucketFiles(bucketId){
+  state.loadingBucket = true;
+  state.bucketError = "";
+  render();
+  try{
+    const res = await storage.listFiles({ bucketId });
+    state.filesByBucket[bucketId] = (res && res.files) || [];
+    state.loadingBucket = false;
+    render();
+  } catch(e){
+    state.loadingBucket = false;
+    state.bucketError = "파일 목록을 불러오지 못했습니다: " + (e.message || e);
+    render();
+  }
+}
+
+// 같은 파일명이 이미 있으면 지우고 새로 올려서 "교체", 없으면 그냥 "추가".
+async function uploadFiles(bucketId, fileList){
+  state.uploadBusy = true;
+  render();
+  const existing = state.filesByBucket[bucketId] || [];
+  try{
+    for(const file of Array.from(fileList)){
+      const dup = existing.find(f => f.name === file.name);
+      if(dup){
+        await storage.deleteFile({ bucketId, fileId: dup.$id });
+      }
+      await storage.createFile({ bucketId, fileId: ID.unique(), file });
+    }
+    await loadBucketFiles(bucketId);
+  } catch(e){
+    state.bucketError = "업로드 중 오류가 발생했습니다: " + (e.message || e);
+  }
+  state.uploadBusy = false;
+  render();
+}
+
+async function deleteFile(bucketId, fileId){
+  if(!confirm("이 파일을 삭제하시겠어요? 되돌릴 수 없습니다.")) return;
+  try{
+    await storage.deleteFile({ bucketId, fileId });
+    await loadBucketFiles(bucketId);
+  } catch(e){
+    state.bucketError = "삭제 중 오류가 발생했습니다: " + (e.message || e);
+    render();
+  }
+}
+
+async function sendAnnouncement(){
+  const text = state.noticeText.trim();
+  if(!text) return;
+  state.noticeStatus = "발송 중...";
+  render();
+  try{
+    await databases.createDocument({
+      databaseId: APPWRITE_DATABASE_ID,
+      collectionId: APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
+      documentId: ID.unique(),
+      data: { message: text, createdAt: new Date().toISOString() },
+    });
+    state.noticeStatus = "발송 완료! 접속 중인 사용자에게 알림이 표시됩니다.";
+    state.noticeText = "";
+  } catch(e){
+    state.noticeStatus = "발송 실패: " + (e.message || e);
+  }
+  render();
+}
+
+function render(){
+  const app = document.getElementById("app");
+  if(state.screen === "login"){
+    renderLogin(app);
+  } else {
+    renderPanel(app);
+  }
+}
+
+function renderLogin(app){
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand"><div class="brand-mark">M</div><div class="brand-title">단가표 관리자</div></div>
+    </div>
+    <div class="login-wrap card">
+      <h1>관리자 로그인</h1>
+      <p class="sub">Appwrite 계정으로 로그인하세요.</p>
+      ${state.loginError ? `<div class="err">${state.loginError}</div>` : ""}
+      <div class="field"><label>이메일</label><input type="email" id="emailInput" autocomplete="username" /></div>
+      <div class="field"><label>비밀번호</label><input type="password" id="pwInput" autocomplete="current-password" /></div>
+      <button class="btn btn-primary" id="loginBtn" style="width:100%">로그인</button>
+    </div>
+  `;
+  const doLogin = () => {
+    const email = document.getElementById("emailInput").value.trim();
+    const pw = document.getElementById("pwInput").value;
+    if(email && pw) login(email, pw);
+  };
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("pwInput").addEventListener("keydown", (e) => { if(e.key === "Enter") doLogin(); });
+}
+
+function renderPanel(app){
+  const files = state.filesByBucket[state.activeBucket] || [];
+  const activeBucketInfo = BUCKETS.find(b => b.key === state.activeBucket);
+
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand"><div class="brand-mark">M</div><div class="brand-title">단가표 관리자</div></div>
+      <button class="btn btn-ghost" id="logoutBtn">로그아웃</button>
+    </div>
+
+    <div class="card">
+      <h1>업데이트 알림 보내기</h1>
+      <p class="sub">파일을 다 올리신 뒤, 아래에 변경 내용을 적고 보내면 접속 중인 사용자 화면에 알림이 뜹니다.<br>예시: 08월18일 14시 이후 정책변동사항 : S26류 MNP 5만원 추가 / 폴더블8류 MNP 2만원 축소</p>
+      ${state.noticeStatus ? `<div class="${state.noticeStatus.startsWith('발송 실패') ? 'err' : 'ok-msg'}">${state.noticeStatus}</div>` : ""}
+      <div class="field">
+        <textarea id="noticeTextarea" placeholder="변경 내용을 적어주세요">${state.noticeText}</textarea>
+      </div>
+      <button class="btn btn-primary" id="sendNoticeBtn">업데이트 알림 보내기</button>
+    </div>
+
+    <div class="card">
+      <h1>파일 관리</h1>
+      <p class="sub">폴더(버킷)를 선택하고 파일을 올리세요. 같은 이름의 파일이 있으면 자동으로 교체되고, 다른 이름이면 새로 추가됩니다.</p>
+      <div class="tab-row" id="bucketTabs">
+        ${BUCKETS.map(b => `<button class="tab-btn ${state.activeBucket===b.key?'active':''}" data-bucket="${b.key}">${b.label}</button>`).join("")}
+      </div>
+
+      <div class="file-drop">
+        <input type="file" id="fileInput" multiple ${state.uploadBusy ? "disabled" : ""} />
+        ${state.uploadBusy ? `<div class="spinner-note">업로드 중입니다...</div>` : ""}
+      </div>
+
+      ${state.bucketError ? `<div class="err">${state.bucketError}</div>` : ""}
+
+      ${state.loadingBucket ? `<div class="empty">불러오는 중...</div>` : files.length === 0 ? `<div class="empty">"${activeBucketInfo.label}" 폴더에 파일이 없습니다.</div>` : `
+      <table>
+        <thead><tr><th>파일명</th><th>크기</th><th>업로드일</th><th></th></tr></thead>
+        <tbody>
+          ${files.map(f => `
+            <tr>
+              <td>${f.name}</td>
+              <td class="num">${fmtSize(getFileSize(f))}</td>
+              <td class="num">${fmtDate(f.$createdAt)}</td>
+              <td><button class="btn btn-danger" data-delete="${f.$id}">삭제</button></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>`}
+    </div>
+  `;
+
+  document.getElementById("logoutBtn").addEventListener("click", logout);
+  document.getElementById("sendNoticeBtn").addEventListener("click", sendAnnouncement);
+  const noticeTextarea = document.getElementById("noticeTextarea");
+  noticeTextarea.addEventListener("input", (e) => { state.noticeText = e.target.value; });
+
+  document.querySelectorAll("#bucketTabs .tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.activeBucket = btn.dataset.bucket;
+      state.bucketError = "";
+      render();
+      if(!state.filesByBucket[state.activeBucket]){
+        loadBucketFiles(state.activeBucket);
+      }
+    });
+  });
+
+  document.getElementById("fileInput").addEventListener("change", (e) => {
+    if(e.target.files.length){
+      uploadFiles(state.activeBucket, e.target.files);
+    }
+  });
+
+  document.querySelectorAll("[data-delete]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      deleteFile(state.activeBucket, btn.dataset.delete);
+    });
+  });
+}
+
+checkExistingSession();
+</script>
+</body>
+</html>

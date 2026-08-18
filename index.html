@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단가표 조회</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<!-- Appwrite Web SDK (전역 Appwrite 객체 제공). 서버의 Appwrite 버전과 SDK 버전이 다르면
+     API가 살짝 다를 수 있으니, 안 맞으면 https://appwrite.io/docs 에서 버전 확인해 주세요. -->
+<script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2"></script>
+<style>
+  :root{
+    --bg:#F3F4F7;
+    --panel:#FFFFFF;
+    --border:#E2E4EA;
+    --border-strong:#CBD0DA;
+    --text:#181B21;
+    --text-2:#5B616E;
+    --text-3:#8A8F99;
+    --accent:#2455D0;
+    --accent-dark:#173C99;
+    --accent-bg:#EAF0FD;
+    --amber:#C97A1A;
+    --amber-bg:#FBF1E1;
+    --danger:#C0392B;
+    --danger-bg:#FBEAE8;
+    --gongsi:#2455D0;
+    --gongsi-bg:#EAF0FD;
+    --seonyak:#1D8A6C;
+    --seonyak-bg:#E7F5EF;
+    --radius:10px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Pretendard","Segoe UI","Malgun Gothic",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{max-width:1080px;margin:0 auto;padding:24px 20px 60px;}
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:8px;background:var(--accent);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px;flex-shrink:0;
+  }
+  .brand-title{font-size:17px;font-weight:700;letter-spacing:-0.2px;}
+  .session-badge{
+    display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2);
+  }
+  .pill{
+    padding:3px 10px;border-radius:999px;background:var(--accent-bg);
+    color:var(--accent-dark);font-weight:700;font-size:12px;
+  }
+  .btn{
+    appearance:none;border:1px solid var(--border-strong);background:var(--panel);
+    color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;
+    font-weight:600;cursor:pointer;transition:background .12s,border-color .12s;
+    font-family:var(--sans);
+  }
+  .btn:hover{background:#F7F8FA;border-color:var(--text-3);}
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
+  .btn-primary:disabled{background:#B9C4DD;border-color:#B9C4DD;cursor:not-allowed;}
+  .btn-ghost{border-color:transparent;background:transparent;color:var(--text-2);}
+  .btn-ghost:hover{background:#ECEDF1;}
+
+  .card{
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    padding:24px;
+  }
+  .card + .card{margin-top:16px;}
+  h1{font-size:20px;margin:0 0 4px;letter-spacing:-0.2px;}
+  h2{font-size:15px;margin:0 0 14px;color:var(--text);}
+  .sub{color:var(--text-2);font-size:13px;margin:0 0 18px;line-height:1.6;}
+  .sub code{background:#F0F1F4;border-radius:4px;padding:1px 5px;font-family:var(--mono);font-size:12px;}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--text-2);margin-bottom:6px;}
+  .file-drop{
+    border:1.5px dashed var(--border-strong);border-radius:10px;padding:18px;
+    display:flex;align-items:center;gap:12px;background:#FAFBFC;
+  }
+  .file-drop input[type=file]{font-size:13px;color:var(--text-2);}
+  .file-status{font-size:12px;color:var(--text-3);margin-top:6px;}
+  .file-status.ok{color:var(--seonyak);font-weight:600;}
+
+  input[type=text],input[type=password]{
+    width:100%;padding:10px 12px;border:1px solid var(--border-strong);
+    border-radius:8px;font-size:14px;font-family:var(--sans);background:#fff;color:var(--text);
+  }
+  input[type=text]:focus,input[type=password]:focus{
+    outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);
+  }
+  select{
+    padding:8px 10px;border:1px solid var(--border-strong);border-radius:8px;
+    font-size:13px;font-family:var(--sans);background:#fff;color:var(--text);
+  }
+
+  .err{
+    background:var(--danger-bg);color:var(--danger);border:1px solid #F0C4BF;
+    padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;font-weight:600;
+  }
+  .notice{
+    background:var(--amber-bg);color:var(--amber);border:1px solid #F0D9B0;
+    padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;font-weight:600;
+  }
+
+  .login-wrap{max-width:380px;margin:60px auto 0;}
+
+  .toolbar{
+    display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px;
+  }
+  .toolbar .grow{flex:1;min-width:220px;}
+  .plan-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+  .chip{
+    padding:7px 14px;border-radius:999px;border:1px solid var(--border-strong);
+    background:#fff;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-2);
+    font-family:var(--sans);
+  }
+  .chip:hover{border-color:var(--accent);color:var(--accent-dark);}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .chip.quick-chip{border-color:#E8C48A;color:var(--amber);background:var(--amber-bg);}
+  .chip.quick-chip:hover{border-color:var(--amber);}
+  .chip.quick-chip.active{background:var(--amber);border-color:var(--amber);color:#fff;}
+
+  @media (max-width: 600px){
+    #planRow1, #planRow2{ flex-wrap:nowrap; gap:3px; }
+    #planRow1 .chip, #planRow2 .chip{
+      flex:1 1 0; min-width:0; padding:5px 0;
+      font-size:10px; text-align:center; white-space:nowrap;
+    }
+  }
+
+  .empty{
+    text-align:center;padding:50px 20px;color:var(--text-3);font-size:13px;
+  }
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{
+    text-align:right;font-size:11px;color:var(--text-3);font-weight:700;
+    padding:8px 10px;border-bottom:2px solid var(--border-strong);
+    text-transform:uppercase;letter-spacing:.03em;
+  }
+  thead th:first-child,thead th:nth-child(2){text-align:left;}
+  tbody td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:right;font-family:var(--mono);}
+  tbody td:first-child, tbody td.type-cell{text-align:left;font-family:var(--sans);}
+  tbody tr.model-first td{border-top:2px solid var(--border-strong);}
+  td.model-name{vertical-align:middle;}
+  tr.row-gongsi td.price-cell{background:var(--gongsi-bg);font-weight:800;font-size:15px;color:var(--gongsi-dark,#173C99);}
+  tr.row-seonyak td.price-cell{background:var(--seonyak-bg);font-weight:800;font-size:15px;color:#0E5F49;}
+  .model-name{font-weight:700;}
+  .model-pet{color:var(--text-2);font-weight:400;font-size:12px;}
+  .type-badge{
+    display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:700;
+  }
+  .type-gongsi{background:var(--gongsi-bg);color:var(--gongsi-dark,#173C99);}
+  .type-seonyak{background:var(--seonyak-bg);color:#0E5F49;}
+  .price-zero{color:var(--text-3);}
+
+  .foot-note{font-size:12px;color:var(--text-3);margin-top:14px;}
+
+  .update-banner{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--danger);border:none;color:#fff;
+    padding:16px 20px;border-radius:10px;margin-bottom:16px;font-size:16px;font-weight:800;
+    box-shadow:0 4px 16px rgba(192,57,43,0.35);
+    animation:update-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes update-pulse{
+    0%, 100% { box-shadow:0 4px 16px rgba(192,57,43,0.35); }
+    50% { box-shadow:0 4px 26px rgba(192,57,43,0.65); }
+  }
+  .update-banner button{
+    appearance:none;border:none;background:#fff;color:var(--danger);
+    padding:9px 20px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;
+    font-family:var(--sans);flex-shrink:0;
+  }
+  .update-banner button:hover{opacity:0.9;}
+
+  .watermark-overlay{
+    position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background-repeat:repeat;
+  }
+
+  .tab-row{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);}
+  .tab-btn{
+    appearance:none;border:none;background:transparent;padding:10px 16px;
+    font-size:14px;font-weight:600;color:var(--text-2);cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px;font-family:var(--sans);
+  }
+  .tab-btn:hover{color:var(--text);}
+  .tab-btn.active{color:var(--accent-dark);border-bottom-color:var(--accent);}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,22,26,0.45);
+    display:flex;align-items:flex-start;justify-content:center;z-index:100;
+    padding:8vh 20px 20px;
+  }
+  .modal{
+    background:var(--panel);border-radius:14px;padding:24px;
+    max-width:560px;width:100%;max-height:82vh;overflow:auto;
+  }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .support-trigger{cursor:pointer;border:none;}
+  .support-trigger:hover{opacity:0.8;}
+  .gubun-note{font-size:12px;color:var(--text-2);margin-bottom:8px;}
+
+  .buga-row{display:flex;flex-direction:column;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+  .buga-row img{width:100%;border-radius:8px;border:1px solid var(--border);display:block;}
+
+  .support-group + .support-group{margin-top:16px;}
+  .support-group h2{font-size:13px;color:var(--text-2);margin-bottom:8px;}
+  .grouping-row{cursor:pointer;}
+  .grouping-row:hover td{background:var(--accent-bg);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const PLAN_LIST = ["130군","115군","105군","95군","85군","75군","70군","61군","55군","47군","44군","37군","33군","33군미만"];
+function planColKey(planLabel){ return planLabel === "33군미만" ? "전요금제" : planLabel; }
+const GUBUN_LIST = ["A","B","C","D","E","C1","D1","E1"];
+const PRICE_DATASET_LIMIT = 7;
+const MAIN_TABS = [
+  { key: "mobile", label: "단가조회" },
+  { key: "allmodels", label: "전모델보기" },
+  { key: "wired", label: "유선" },
+  { key: "used", label: "중고" },
+  { key: "sono", label: "소노" },
+  { key: "etc", label: "기타" },
+];
+const CATEGORY_LIST = [
+  { key: "premium", label: "삼성프리미엄" },
+  { key: "apple", label: "애플" },
+  { key: "budget", label: "중저가" },
+];
+function matchesCategory(model, category){
+  const m = (model || "").trim().toUpperCase();
+  const isPremium = m.startsWith("SM-S") || m.startsWith("SM-F");
+  const isApple = m.startsWith("UIP") || /^A\d{4}/.test(m);
+  if(category === "premium") return isPremium;
+  if(category === "apple") return isApple;
+  if(category === "budget") return !isPremium && !isApple;
+  return false;
+}
+
+// ---- 배포 시 아래 값들을 본인 Appwrite 프로젝트에 맞게 수정하세요 ----
+const APPWRITE_ENDPOINT = "https://api.kim-gwajang.com/v1"; // 예: https://appwrite.example.com/v1
+const APPWRITE_PROJECT_ID = "Y6a83fa550021213835d6";
+const APPWRITE_DATABASE_ID = "pricing-site";
+const APPWRITE_ANNOUNCEMENTS_COLLECTION_ID = "announcements";
+// 폴더(버킷) 이름은 기존 GitHub 폴더 구조와 동일하게 만들어두면 코드 수정 없이 그대로 씁니다.
+const BUCKETS = {
+  login: "login", price: "price", grouping: "grouping", support: "support",
+  home: "home", jungo: "jungo", sono: "sono", buga: "buga", etc: "etc", notice: "notice",
+};
+
+let state = {
+  screen: "login",
+  loginDatasets: [],
+  datasets: [],
+  selectedDatasetIdx: 0,
+  session: null,
+  loginError: "",
+  searchText: "",
+  selectedPlan: null,
+  dataReady: false,
+  dataError: "",
+  dataLoading: true,
+  updateAvailable: false,
+  updateMessage: "",
+  mainTab: "mobile",
+  allModelsCategory: null,
+  gubunOverride: null,
+  groupingRows: [],
+  groupingModalOpen: false,
+  groupingQuery: "",
+  groupingNotice: "",
+  supportData: { rows: [], planColumns: [], monthlyFees: {} },
+  supportModal: null,
+  images: { used: null },
+  wiredVariants: {},
+  sonoVariants: {},
+  bugaImages: [],
+  etcImages: [],
+  notice: null,
+  noticeModalOpen: false,
+};
+
+function excelSub(str){
+  return str.split("3").join("V");
+}
+function pad(n, width){
+  return String(n).padStart(width, "0");
+}
+function encodeCredential(id, pw){
+  id = (id || "").trim();
+  pw = (pw || "").trim();
+  if(!id || !pw) return "";
+  const idPadded = id + "A";
+  const pwPadded = pw + "A";
+  const part1 = id.charAt(0);
+  const c1 = idPadded.charCodeAt(1);
+  const part2 = pad((c1 * 13) % 97, 2);
+  const last3 = id.slice(-3);
+  const val3 = parseInt(last3, 10) || 0;
+  const part3 = pad((val3 * 17) % 999, 3);
+  const part4 = String.fromCharCode(64 + pw.length);
+  const p1 = pwPadded.charCodeAt(0);
+  const p2 = pwPadded.charCodeAt(1);
+  const part5 = pad((p1 * 23 + p2 * 11) % 97, 2);
+  const part6 = pw.slice(-2);
+  let result = part1 + part2 + part3 + part4 + part5 + part6 + "==";
+  return excelSub(result);
+}
+
+function parseFileName(name){
+  const m = name.match(/^(\d{4})(\d{2})(\d{2})(?:_(\d{2})(\d{2}))?\.csv$/i);
+  if(!m) return null;
+  const [, yyyy, mm, dd, hh, mi] = m;
+  const time = (hh && mi) ? (hh + mi) : "0000";
+  const sortKey = yyyy + mm + dd + time;
+  const label = `${yyyy}-${mm}-${dd}` + (hh && mi ? ` ${hh}:${mi}` : "");
+  return { sortKey, label };
+}
+function parseLoginFileName(name){
+  const stripped = name.replace(/^login[_-]?/i, "");
+  return parseFileName(stripped);
+}
+
+function stripBom(s){
+  return s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s;
+}
+
+function parsePriceCsv(text, fileName){
+  const parsed = Papa.parse(stripBom(text), { skipEmptyLines: false });
+  const rows = parsed.data;
+  const line1 = rows[0] || [];
+  const line3 = rows[2] || [];
+  const header = line1.map((v, i) => (i < 5 ? (line3[i] || "") : (v || "")));
+  const nameToIndex = {};
+  header.forEach((h, i) => {
+    if(h && h !== "-" && !(h in nameToIndex)) nameToIndex[h] = i;
+  });
+  const allRows = rows.slice(3).filter(r => r && r.length > 4 && (r[2] || r[3] || r[4]));
+  const dataRows = allRows.filter(r => (r[0] || "").trim() === "1");
+  const quickButtons = [];
+  const seenQuick = new Set();
+  dataRows.forEach(r => {
+    const label = (r[1] || "").trim();
+    if(label && label !== "-" && !seenQuick.has(label)){
+      seenQuick.add(label);
+      quickButtons.push(label);
+    }
+  });
+  const meta = parseFileName(fileName);
+  return {
+    fileName,
+    label: meta ? meta.label : fileName,
+    sortKey: meta ? meta.sortKey : fileName,
+    header, nameToIndex, dataRows, quickButtons,
+  };
+}
+
+function parseLoginCsv(text, fileName){
+  const parsed = Papa.parse(stripBom(text), { header: true, skipEmptyLines: true });
+  const meta = parseLoginFileName(fileName);
+  return {
+    fileName,
+    label: meta ? meta.label : fileName,
+    sortKey: meta ? meta.sortKey : fileName,
+    rows: parsed.data,
+  };
+}
+
+function parseGroupingCsv(text){
+  const parsed = Papa.parse(stripBom(text), { header: true, skipEmptyLines: true });
+  return parsed.data.filter(r => r["요금제명"] || r["요금제군"]);
+}
+
+function parseNoticeCsv(text){
+  const parsed = Papa.parse(stripBom(text), { skipEmptyLines: true });
+  const lines = parsed.data
+    .map(row => row.map(c => (c || "").trim()).filter(Boolean).join(" "))
+    .filter(Boolean);
+  return lines.join("\n");
+}
+
+const SUPPORT_FIXED_COLS = ["단말구분","가입유형","제조사","모델명","Pet Name","출고가"];
+function parseSupportCsv(text){
+  const parsed = Papa.parse(stripBom(text), { header: true, skipEmptyLines: true });
+  const fields = (parsed.meta && parsed.meta.fields) || [];
+  const planColumns = fields.filter(f => !SUPPORT_FIXED_COLS.includes(f));
+  // 2번째 행(헤더 바로 다음 행)은 요금제별 월정액 표기 행이라 실제 데이터에서 분리한다.
+  const monthlyFeeRow = parsed.data[0] || {};
+  const monthlyFees = {};
+  planColumns.forEach(col => {
+    const n = parseFloat(monthlyFeeRow[col]);
+    monthlyFees[col] = isNaN(n) ? null : Math.round(n);
+  });
+  const rows = parsed.data.slice(1);
+  return { rows, planColumns, monthlyFees };
+}
+
+function escapeXml(s){
+  return (s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&apos;" }[c]));
+}
+
+function buildWatermarkDataUrl(text){
+  const safe = escapeXml(text);
+  const now = new Date();
+  const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+  const label = `${safe} ${stamp}`;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='220'>` +
+    `<text x='10' y='60' transform='rotate(-28 160 110)' font-size='16' font-family='sans-serif' fill='rgba(0,0,0,0.12)'>${label}</text>` +
+    `<text x='10' y='170' transform='rotate(-28 160 110)' font-size='16' font-family='sans-serif' fill='rgba(0,0,0,0.12)'>${label}</text>` +
+    `</svg>`;
+  // encodeURIComponent leaves ' ( ) unescaped, which would otherwise break out of
+  // the url('...') wrapper below (our SVG uses both single-quoted attributes and
+  // rotate(...) parens) — escape those manually so nothing can break the CSS value.
+  const encoded = encodeURIComponent(svg)
+    .replace(/'/g, "%27")
+    .replace(/\(/g, "%28")
+    .replace(/\)/g, "%29");
+  return `url('data:image/svg+xml,${encoded}')`;
+}
+
+function handleLoginFiles(files){
+  const list = Array.from(files);
+  let remaining = list.length;
+  const results = [];
+  list.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      results.push(parseLoginCsv(e.target.result, file.name));
+      remaining--;
+      if(remaining === 0){
+        results.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
+        state.loginDatasets = results;
+        render();
+      }
+    };
+    reader.readAsText(file, "UTF-8");
+  });
+}
+
+// Appwrite 클라이언트 설정 (SDK는 아래 <script> 태그로 전역 Appwrite 객체를 불러옵니다)
+const client = new Appwrite.Client()
+  .setEndpoint(APPWRITE_ENDPOINT)
+  .setProject(APPWRITE_PROJECT_ID);
+const storage = new Appwrite.Storage(client);
+const databases = new Appwrite.Databases(client);
+const Query = Appwrite.Query;
+
+async function fetchBucketFiles(bucketId){
+  const res = await storage.listFiles({ bucketId });
+  const entries = (res && res.files) || [];
+  const results = [];
+  for(const f of entries){
+    const rawUrl = storage.getFileView({ bucketId, fileId: f.$id });
+    const url = String(rawUrl);
+    const item = { name: f.name, id: f.$id, url };
+    if(/\.csv$/i.test(f.name)){
+      const fileRes = await fetch(url);
+      if(!fileRes.ok) throw new Error(`${f.name} 파일을 불러오지 못했습니다 (${fileRes.status})`);
+      item.text = await fileRes.text();
+    }
+    results.push(item);
+  }
+  return results;
+}
+
+async function fetchBucketFilesSafe(bucketId){
+  try{
+    return await fetchBucketFiles(bucketId);
+  } catch(e){
+    return [];
+  }
+}
+
+async function fetchRawData(){
+  const [loginFiles, priceFiles, groupingFiles, supportFiles, homeFiles, jungoFiles, sonoFiles, bugaFiles, etcFiles, noticeFiles] = await Promise.all([
+    fetchBucketFiles(BUCKETS.login),
+    fetchBucketFiles(BUCKETS.price),
+    fetchBucketFilesSafe(BUCKETS.grouping),
+    fetchBucketFilesSafe(BUCKETS.support),
+    fetchBucketFilesSafe(BUCKETS.home),
+    fetchBucketFilesSafe(BUCKETS.jungo),
+    fetchBucketFilesSafe(BUCKETS.sono),
+    fetchBucketFilesSafe(BUCKETS.buga),
+    fetchBucketFilesSafe(BUCKETS.etc),
+    fetchBucketFilesSafe(BUCKETS.notice),
+  ]);
+  if(!loginFiles.length || !priceFiles.length){
+    throw new Error("login 또는 price 버킷에서 csv 파일을 찾지 못했습니다.");
+  }
+  return { loginFiles, priceFiles, groupingFiles, supportFiles, homeFiles, jungoFiles, sonoFiles, bugaFiles, etcFiles, noticeFiles };
+}
+
+// home1.png/home2.png, sono1.png/sono2.png 처럼 끝자리 숫자로 구분되는 파일들을
+// { "1": url, "2": url } 형태로 매핑한다. Appwrite는 파일 뷰 URL을 그대로 이미지 src로 쓸 수 있어
+// GitHub 버전과 달리 base64 변환이 필요 없다.
+function buildVariantImageMap(files){
+  const map = {};
+  files.forEach(f => {
+    const m = f.name.match(/(\d+)\.(png|jpe?g|webp|gif)$/i);
+    if(m){
+      map[m[1]] = f.url;
+    }
+  });
+  return map;
+}
+
+function applyRawData(raw){
+  const loginResults = raw.loginFiles.map(f => parseLoginCsv(f.text, f.name));
+  loginResults.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
+  let priceResults = raw.priceFiles.map(f => parsePriceCsv(f.text, f.name));
+  priceResults.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
+  priceResults = priceResults.slice(0, PRICE_DATASET_LIMIT);
+
+  state.loginDatasets = loginResults;
+  state.datasets = priceResults;
+  state.selectedDatasetIdx = 0;
+
+  state.groupingRows = raw.groupingFiles.length ? parseGroupingCsv(raw.groupingFiles[0].text) : [];
+  state.supportData = raw.supportFiles.length ? parseSupportCsv(raw.supportFiles[0].text) : { rows: [], planColumns: [], monthlyFees: {} };
+  state.images = {
+    used: raw.jungoFiles.length ? raw.jungoFiles[0].url : null,
+  };
+  state.wiredVariants = buildVariantImageMap(raw.homeFiles);
+  state.sonoVariants = buildVariantImageMap(raw.sonoFiles);
+  state.bugaImages = raw.bugaFiles
+    .sort((a,b) => a.name.localeCompare(b.name))
+    .map(f => f.url);
+  state.etcImages = raw.etcFiles
+    .sort((a,b) => a.name.localeCompare(b.name))
+    .map(f => f.url);
+
+  const noticeCsvFile = raw.noticeFiles.find(f => /\.csv$/i.test(f.name));
+  const noticeImageFile = raw.noticeFiles.find(f => !/\.csv$/i.test(f.name));
+  const noticeContent = noticeCsvFile ? parseNoticeCsv(noticeCsvFile.text) : "";
+  state.notice = noticeContent ? {
+    title: "오늘의 알림",
+    content: noticeContent,
+    image: noticeImageFile ? noticeImageFile.url : null,
+  } : null;
+}
+
+// ---- 5분마다 CSV를 비교하던 방식 대신, 관리자 사이트에서 "업데이트 알림"을
+// 누를 때만 생기는 announcements 문서를 실시간(Realtime)으로 받는다. ----
+const ANNOUNCEMENT_SEEN_KEY = "appwriteLastSeenAnnouncementId";
+
+async function checkLatestAnnouncement(){
+  try{
+    const res = await databases.listDocuments({
+      databaseId: APPWRITE_DATABASE_ID,
+      collectionId: APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
+      queries: [Query.orderDesc("$createdAt"), Query.limit(1)],
+    });
+    const doc = res && res.documents && res.documents[0];
+    if(!doc) return;
+    let lastSeenId = null;
+    try{ lastSeenId = localStorage.getItem(ANNOUNCEMENT_SEEN_KEY); } catch(e){}
+    if(doc.$id !== lastSeenId){
+      state.updateAvailable = true;
+      state.updateMessage = doc.message || "단가표가 업데이트되었습니다.";
+      render();
+    }
+  } catch(e){
+    // 공지 확인 실패는 조용히 무시 (핵심 데이터 조회에는 영향 없음)
+  }
+}
+
+function subscribeAnnouncements(){
+  try{
+    client.subscribe(
+      `databases.${APPWRITE_DATABASE_ID}.collections.${APPWRITE_ANNOUNCEMENTS_COLLECTION_ID}.documents`,
+      (response) => {
+        const isCreate = response && response.events && response.events.some(e => e.endsWith(".create"));
+        if(isCreate && response.payload){
+          state.updateAvailable = true;
+          state.updateMessage = response.payload.message || "단가표가 업데이트되었습니다.";
+          render();
+        }
+      }
+    );
+  } catch(e){
+    // 실시간 구독이 안 되어도 사이트 이용 자체는 문제없음 (알림만 못 받음)
+  }
+}
+
+async function acknowledgeAnnouncementAndReload(){
+  try{
+    const res = await databases.listDocuments({
+      databaseId: APPWRITE_DATABASE_ID,
+      collectionId: APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
+      queries: [Query.orderDesc("$createdAt"), Query.limit(1)],
+    });
+    const doc = res && res.documents && res.documents[0];
+    if(doc){
+      try{ localStorage.setItem(ANNOUNCEMENT_SEEN_KEY, doc.$id); } catch(e){}
+    }
+  } catch(e){}
+  window.location.reload();
+}
+
+async function loadFromAppwrite(){
+  state.dataLoading = true;
+  state.dataError = "";
+  render();
+  try{
+    const raw = await fetchRawData();
+    applyRawData(raw);
+    state.dataReady = true;
+    state.dataLoading = false;
+    restoreSession();
+    render();
+    checkLatestAnnouncement();
+    subscribeAnnouncements();
+  } catch(err){
+    state.dataLoading = false;
+    state.dataReady = false;
+    state.dataError = "가격 데이터를 불러오지 못했습니다: " + err.message;
+    render();
+  }
+}
+
+function handlePriceFiles(files){
+  const list = Array.from(files);
+  let remaining = list.length;
+  const results = [];
+  list.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      results.push(parsePriceCsv(e.target.result, file.name));
+      remaining--;
+      if(remaining === 0){
+        results.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
+        state.datasets = results.slice(0, PRICE_DATASET_LIMIT);
+        state.selectedDatasetIdx = 0;
+        render();
+      }
+    };
+    reader.readAsText(file, "UTF-8");
+  });
+}
+
+const SESSION_STORAGE_KEY = "priceLookupSession";
+let autoLogoutTimer = null;
+
+// 매일 20시가 다음 만료 시점. 이미 오늘 20시를 지났다면 내일 20시로.
+function nextLogoutTime(fromMs){
+  const d = new Date(fromMs);
+  d.setHours(20, 0, 0, 0);
+  if(d.getTime() <= fromMs){
+    d.setDate(d.getDate() + 1);
+  }
+  return d.getTime();
+}
+
+function saveSession(credentialKey, displayId){
+  const expiresAt = nextLogoutTime(Date.now());
+  try{
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ credentialKey, displayId, expiresAt }));
+  } catch(e){}
+  scheduleAutoLogout(expiresAt);
+}
+
+function clearSavedSession(){
+  try{ localStorage.removeItem(SESSION_STORAGE_KEY); } catch(e){}
+  if(autoLogoutTimer){ clearTimeout(autoLogoutTimer); autoLogoutTimer = null; }
+}
+
+function scheduleAutoLogout(expiresAt){
+  if(autoLogoutTimer) clearTimeout(autoLogoutTimer);
+  const delay = expiresAt - Date.now();
+  if(delay <= 0) return;
+  autoLogoutTimer = setTimeout(() => {
+    if(state.session) logout();
+  }, delay);
+}
+
+// 새로고침 직후, 저장된 세션이 아직 유효하면 로그인 화면을 건너뛴다.
+function todayDateKey(){
+  const now = new Date();
+  return `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}`;
+}
+
+const NOTICE_DISMISS_KEY = "priceLookupNoticeDismissedDate";
+function isNoticeDismissedToday(){
+  try{ return localStorage.getItem(NOTICE_DISMISS_KEY) === todayDateKey(); } catch(e){ return false; }
+}
+function dismissNoticeToday(){
+  try{ localStorage.setItem(NOTICE_DISMISS_KEY, todayDateKey()); } catch(e){}
+}
+
+// notice.csv에 있는 내용을 그대로 하나의 공지로 취급한다 (날짜별 구분 없음).
+function getActiveNotice(){
+  return state.notice;
+}
+
+function maybeShowNotice(){
+  if(isNoticeDismissedToday()) return;
+  if(getActiveNotice()) state.noticeModalOpen = true;
+}
+
+function restoreSession(){
+  let raw;
+  try{ raw = localStorage.getItem(SESSION_STORAGE_KEY); } catch(e){ return; }
+  if(!raw) return;
+  let saved;
+  try{ saved = JSON.parse(raw); } catch(e){ clearSavedSession(); return; }
+  if(!saved || !saved.credentialKey || !saved.expiresAt || Date.now() >= saved.expiresAt){
+    clearSavedSession();
+    return;
+  }
+  const latest = state.loginDatasets[0];
+  if(!latest) return;
+  const match = latest.rows.find(r => (r["고유번호"] || "").trim() === saved.credentialKey);
+  if(!match || (match["구분"] || "").trim() === "S"){
+    clearSavedSession();
+    return;
+  }
+  state.session = { credentialKey: saved.credentialKey, displayId: saved.displayId || "" };
+  state.screen = "search";
+  scheduleAutoLogout(saved.expiresAt);
+  maybeShowNotice();
+}
+
+function attemptLogin(id, pw){
+  state.loginError = "";
+  if(!state.loginDatasets.length){ return; }
+  const encoded = encodeCredential(id, pw);
+  const latest = state.loginDatasets[0];
+  const match = latest.rows.find(r => (r["고유번호"] || "").trim() === encoded);
+  if(!match){
+    state.loginError = "아이디 또는 비밀번호가 올바르지 않습니다.";
+    render();
+    return;
+  }
+  const gubun = (match["구분"] || "").trim();
+  if(gubun === "S"){
+    state.loginError = "더 이상 사용되지 않는 계정입니다. 관리자에게 문의해 주세요.";
+    render();
+    return;
+  }
+  state.session = { credentialKey: encoded, displayId: id.trim() };
+  state.screen = "search";
+  saveSession(encoded, id.trim());
+  maybeShowNotice();
+  render();
+}
+
+function logout(){
+  clearSavedSession();
+  state.session = null;
+  state.searchText = "";
+  state.selectedPlan = null;
+  state.gubunOverride = null;
+  state.allModelsCategory = null;
+  state.mainTab = "mobile";
+  state.screen = "login";
+  render();
+}
+
+// Finds which login-file version applies "as of" a given price dataset's date,
+// then resolves that account's 구분/구분2 as of that date.
+function resolveAccountForDataset(priceDataset){
+  if(!state.session || !state.loginDatasets.length || !priceDataset) return null;
+  const asOfOrBefore = state.loginDatasets.filter(d => d.sortKey <= priceDataset.sortKey);
+  let chosen;
+  if(asOfOrBefore.length){
+    chosen = asOfOrBefore.reduce((a, b) => (b.sortKey > a.sortKey ? b : a));
+  } else {
+    chosen = state.loginDatasets.reduce((a, b) => (b.sortKey < a.sortKey ? b : a));
+  }
+  const match = chosen.rows.find(r => (r["고유번호"] || "").trim() === state.session.credentialKey);
+  if(!match){
+    return { notFound: true, asOfLabel: chosen.label };
+  }
+  const raw4 = (match["구분4"] || "").trim();
+  // 세미콜론(;)으로 구분해서 여러 모델을 지정할 수 있다.
+  // 각 항목은 "모델명" / "모델명:범위" / "모델명:범위:금액"(항목별로 다른 금액을 쓰고 싶을 때) 형태.
+  const extraTargets = raw4
+    ? raw4.split(";").map(s => s.trim()).filter(Boolean).map(entry => {
+        const parts = entry.split(":");
+        const amountStr = (parts[2] || "").trim();
+        const amount = amountStr ? parseInt(amountStr, 10) : null;
+        return {
+          model: (parts[0] || "").trim(),
+          scope: (parts[1] || "").trim() || "전체",
+          amount: (amount !== null && !isNaN(amount)) ? amount : null,
+        };
+      })
+    : [];
+  return {
+    gubun: (match["구분"] || "").trim(),
+    gubun2: parseInt(match["구분2"], 10) || 0,
+    extraAmount: parseInt(match["구분3"], 10) || 0,
+    extraTargets,
+    wired: (match["유선"] || "").trim(),
+    sono: (match["소노"] || "").trim(),
+    asOfLabel: chosen.label,
+  };
+}
+
+// 구분4의 범위 지정(전체/공시/선약/010/MNP/기변/공시기변 등)이 현재 셀(type+suffix)에 해당하는지 확인
+function matchesScopeToken(scope, type, suffix){
+  const s = (scope || "전체").trim();
+  if(!s || s === "전체") return true;
+  if(s === type) return true;
+  if(s === suffix) return true;
+  if(s === (type + suffix)) return true;
+  return false;
+}
+
+function getColValue(dataset, row, prefix, type, planLabel, suffix){
+  const colName = prefix + type + planColKey(planLabel) + suffix;
+  const idx = dataset.nameToIndex[colName];
+  if(idx === undefined) return null;
+  const raw = row[idx];
+  if(raw === undefined || raw === "" || raw === null) return null;
+  const n = parseInt(raw, 10);
+  if(isNaN(n)) return null;
+  return n;
+}
+
+// 계정/구분(prefix) 해석을 buildResults와 buildCategoryResults가 공유한다.
+function resolveEffectivePrefix(dataset){
+  if(!dataset || !state.session) return { account: null };
+  const account = resolveAccountForDataset(dataset);
+  if(!account || account.notFound || account.gubun === "S"){
+    return { account };
+  }
+  let prefix = account.gubun;
+  if(prefix === "ALL"){
+    if(!state.gubunOverride) return { account, needsGubunPick: true };
+    prefix = state.gubunOverride;
+  }
+  return { account, prefix };
+}
+
+function computeRowResults(dataset, row, prefix, offset, account, plan){
+  const model = row[3] || "";
+  const petName = row[4] || "";
+  const out = [];
+  ["공시","선약"].forEach(type => {
+    const v010 = getColValue(dataset, row, prefix, type, plan, "010");
+    const vMnp = getColValue(dataset, row, prefix, type, plan, "MNP");
+    const vGibyeon = getColValue(dataset, row, prefix, type, plan, "기변");
+    const applyAdj = (v, suffix) => {
+      if(v === null) return null;
+      let result = v + offset;
+      if(account.extraTargets && account.extraTargets.length){
+        const target = account.extraTargets.find(t => t.model === model.trim() && matchesScopeToken(t.scope, type, suffix));
+        if(target){
+          const amt = target.amount !== null ? target.amount : account.extraAmount;
+          if(amt) result += amt;
+        }
+      }
+      return result;
+    };
+    out.push({
+      model, petName, type,
+      v010: applyAdj(v010, "010"),
+      vMnp: applyAdj(vMnp, "MNP"),
+      vGibyeon: applyAdj(vGibyeon, "기변"),
+    });
+  });
+  return out;
+}
+
+function buildResults(){
+  const dataset = state.datasets[state.selectedDatasetIdx];
+  if(!dataset || !state.session || !state.selectedPlan) return { rows: [], account: null };
+  const { account, prefix, needsGubunPick } = resolveEffectivePrefix(dataset);
+  if(!account || account.notFound || account.gubun === "S" || needsGubunPick){
+    return { rows: [], account, needsGubunPick };
+  }
+  const q = state.searchText.trim().toLowerCase();
+  if(!q) return { rows: [], account };
+  const offset = account.gubun2;
+  const plan = state.selectedPlan;
+  const out = [];
+  dataset.dataRows.forEach(row => {
+    const quickLabel = row[1] || "";
+    const modelSummary = row[2] || "";
+    const model = row[3] || "";
+    const petName = row[4] || "";
+    const hay = (model + " " + petName + " " + modelSummary + " " + quickLabel).toLowerCase();
+    if(!hay.includes(q)) return;
+    out.push(...computeRowResults(dataset, row, prefix, offset, account, plan));
+  });
+  return { rows: out, account };
+}
+
+function buildCategoryResults(){
+  const dataset = state.datasets[state.selectedDatasetIdx];
+  if(!dataset || !state.session || !state.selectedPlan) return { rows: [], account: null };
+  const { account, prefix, needsGubunPick } = resolveEffectivePrefix(dataset);
+  if(!account || account.notFound || account.gubun === "S" || needsGubunPick){
+    return { rows: [], account, needsGubunPick };
+  }
+  if(!state.allModelsCategory) return { rows: [], account, needsCategoryPick: true };
+  const offset = account.gubun2;
+  const plan = state.selectedPlan;
+  const out = [];
+  dataset.dataRows.forEach(row => {
+    const model = row[3] || "";
+    if(!matchesCategory(model, state.allModelsCategory)) return;
+    out.push(...computeRowResults(dataset, row, prefix, offset, account, plan));
+  });
+  return { rows: out, account };
+}
+
+function fmtPrice(v){
+  if(v === null) return '<span class="price-zero">-</span>';
+  return v.toLocaleString("ko-KR");
+}
+
+function render(){
+  const app = document.getElementById("app");
+  if(state.screen === "upload"){
+    renderUpload(app);
+  } else if(state.screen === "search"){
+    renderSearch(app);
+  } else {
+    renderLogin(app);
+  }
+}
+
+function renderUpload(app){
+  const loginOk = state.loginDatasets.length > 0;
+  const priceOk = state.datasets.length > 0;
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-title">단가표 조회</div>
+      </div>
+      <button class="btn btn-ghost" id="backToLoginBtn">로그인 화면으로</button>
+    </div>
+
+    <div class="card">
+      <h1>파일 직접 업로드 (테스트/임시용)</h1>
+      <p class="sub">평소에는 저장소에서 자동으로 불러오지만, 자동 연동이 준비되기 전이거나 문제가 있을 때 여기서 CSV를 직접 올려 테스트할 수 있습니다. 두 파일 모두 날짜별로 여러 개를 한 번에 올릴 수 있습니다. (예: login_20260721.csv, login_20260801.csv / 20260721.csv, 20260721_1600.csv)</p>
+
+      <div class="field">
+        <label>로그인 파일 (login_YYYYMMDD.csv 형식)</label>
+        <div class="file-drop">
+          <input type="file" id="loginFileInput" accept=".csv" multiple />
+        </div>
+        <div class="file-status ${loginOk ? 'ok' : ''}">
+          ${loginOk ? `불러옴: ${state.loginDatasets.map(d=>d.label).join(", ")}` : '파일을 선택해 주세요.'}
+        </div>
+      </div>
+
+      <div class="field">
+        <label>단가표 파일 (예: 20260721.csv, 20260721_1600.csv, ...)</label>
+        <div class="file-drop">
+          <input type="file" id="priceFileInput" accept=".csv" multiple />
+        </div>
+        <div class="file-status ${priceOk ? 'ok' : ''}">
+          ${priceOk ? `불러옴: ${state.datasets.map(d=>d.label).join(", ")}` : '파일을 선택해 주세요.'}
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="useUploadedBtn" ${(loginOk && priceOk) ? "" : "disabled"}>이 파일로 로그인 화면 진행</button>
+    </div>
+  `;
+  document.getElementById("backToLoginBtn").addEventListener("click", () => {
+    state.screen = "login";
+    render();
+  });
+  document.getElementById("loginFileInput").addEventListener("change", (e) => {
+    if(e.target.files.length) handleLoginFiles(e.target.files);
+  });
+  document.getElementById("priceFileInput").addEventListener("change", (e) => {
+    if(e.target.files.length) handlePriceFiles(e.target.files);
+  });
+  const useBtn = document.getElementById("useUploadedBtn");
+  if(useBtn) useBtn.addEventListener("click", () => {
+    state.dataReady = true;
+    state.dataError = "";
+    state.screen = "login";
+    render();
+  });
+}
+
+function renderLogin(app){
+  if(state.dataLoading){
+    app.innerHTML = `
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">M</div>
+          <div class="brand-title">단가표 조회</div>
+        </div>
+      </div>
+      <div class="login-wrap card">
+        <h1>로그인</h1>
+        <p class="sub">가격 데이터를 불러오는 중입니다...</p>
+      </div>
+    `;
+    return;
+  }
+  if(state.dataError){
+    app.innerHTML = `
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">M</div>
+          <div class="brand-title">단가표 조회</div>
+        </div>
+      </div>
+      <div class="login-wrap card">
+        <h1>불러오기 실패</h1>
+        <div class="err">${state.dataError}</div>
+        <button class="btn btn-primary" id="retryBtn" style="width:100%;margin-bottom:8px">다시 시도</button>
+        <button class="btn btn-ghost" id="manualUploadBtn" style="width:100%">파일 직접 업로드로 진행</button>
+      </div>
+    `;
+    document.getElementById("retryBtn").addEventListener("click", loadFromAppwrite);
+    document.getElementById("manualUploadBtn").addEventListener("click", () => {
+      state.screen = "upload";
+      render();
+    });
+    return;
+  }
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-title">단가표 조회</div>
+      </div>
+    </div>
+    <div class="login-wrap card">
+      <h1>로그인</h1>
+      <p class="sub">아이디와 비밀번호를 입력해 주세요.</p>
+      ${state.loginError ? `<div class="err">${state.loginError}</div>` : ""}
+      <div class="field">
+        <label>아이디</label>
+        <input type="text" id="idInput" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>비밀번호</label>
+        <input type="password" id="pwInput" autocomplete="off" />
+      </div>
+      <button class="btn btn-primary" id="loginBtn" style="width:100%">로그인</button>
+    </div>
+  `;
+  const doLogin = () => {
+    const id = document.getElementById("idInput").value;
+    const pw = document.getElementById("pwInput").value;
+    attemptLogin(id, pw);
+  };
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("pwInput").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") doLogin();
+  });
+}
+
+function renderSearch(app){
+  if(!state.session){
+    state.screen = "login";
+    render();
+    return;
+  }
+
+  const tabBarHtml = `
+    <div class="tab-row" id="tabRow">
+      ${MAIN_TABS.map(t => `<button class="tab-btn ${state.mainTab===t.key?'active':''}" data-tab="${t.key}">${t.label}</button>`).join("")}
+    </div>
+  `;
+
+  let bodyHtml = "";
+  if(state.mainTab === "mobile"){
+    bodyHtml = renderMobileBody();
+  } else if(state.mainTab === "allmodels"){
+    bodyHtml = renderAllModelsBody();
+  } else {
+    const currentDataset = state.datasets[state.selectedDatasetIdx];
+    const account = resolveAccountForDataset(currentDataset);
+    bodyHtml = renderStaticTabBody(state.mainTab, account);
+  }
+
+  app.innerHTML = `
+    <div class="watermark-overlay" style="background-image:${buildWatermarkDataUrl(state.session.displayId || "")}"></div>
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div class="brand-title">단가표 조회</div>
+      </div>
+      <div class="session-badge">
+        <button class="btn btn-ghost" id="logoutBtn">로그아웃</button>
+      </div>
+    </div>
+    ${state.updateAvailable ? `
+    <div class="update-banner">
+      <span>🔔 ${state.updateMessage || "단가표 수정!! 새로고침하세요"}</span>
+      <button type="button" id="updateReloadBtn">새로고침</button>
+    </div>` : ""}
+    ${tabBarHtml}
+    ${bodyHtml}
+    ${state.groupingModalOpen ? renderGroupingModal() : ""}
+    ${state.supportModal ? renderSupportModal() : ""}
+    ${state.noticeModalOpen ? renderNoticeModal() : ""}
+  `;
+
+  document.getElementById("logoutBtn").addEventListener("click", logout);
+  const updateReloadBtn = document.getElementById("updateReloadBtn");
+  if(updateReloadBtn){
+    updateReloadBtn.addEventListener("click", () => { acknowledgeAnnouncementAndReload(); });
+  }
+  document.querySelectorAll("#tabRow .tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.mainTab = btn.dataset.tab;
+      render();
+    });
+  });
+
+  if(state.mainTab === "mobile"){
+    wireMobileBody();
+  }
+  if(state.mainTab === "allmodels"){
+    wireAllModelsBody();
+  }
+  if(state.groupingModalOpen){
+    wireGroupingModal();
+  }
+  if(state.supportModal){
+    wireSupportModal();
+  }
+  if(state.noticeModalOpen){
+    wireNoticeModal();
+  }
+}
+
+function renderStaticTabBody(tabKey, account){
+  const labels = { wired: "유선", used: "중고", sono: "소노", etc: "기타" };
+  if(tabKey === "etc"){
+    if(!state.etcImages.length){
+      return `<div class="card"><div class="empty">기타 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
+    }
+    return `<div class="card"><div class="buga-row" style="border-top:none;padding-top:0;margin-top:0">
+      ${state.etcImages.map(src => `<img src="${src}" alt="기타 정책" />`).join("")}
+    </div></div>`;
+  }
+  if(tabKey === "wired" || tabKey === "sono"){
+    const indicator = account && !account.notFound ? (tabKey === "wired" ? account.wired : account.sono) : "";
+    const variants = tabKey === "wired" ? state.wiredVariants : state.sonoVariants;
+    const img = indicator ? variants[indicator] : null;
+    if(!img){
+      return `<div class="card"><div class="empty">${labels[tabKey]} 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
+    }
+    return `<div class="card"><img src="${img}" alt="${labels[tabKey]} 정책" style="width:100%;border-radius:8px;display:block" /></div>`;
+  }
+  const img = state.images[tabKey];
+  if(!img){
+    return `<div class="card"><div class="empty">${labels[tabKey] || ""} 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
+  }
+  return `<div class="card"><img src="${img}" alt="${labels[tabKey] || ""} 정책" style="width:100%;border-radius:8px;display:block" /></div>`;
+}
+
+function renderPlanButtonRows(){
+  return `
+    <div class="plan-row" id="planRow1">
+      ${PLAN_LIST.slice(0,7).map(p => `<button class="chip ${state.selectedPlan===p?'active':''}" data-plan="${p}">${p}</button>`).join("")}
+    </div>
+    <div class="plan-row" id="planRow2">
+      ${PLAN_LIST.slice(7,14).map(p => `<button class="chip ${state.selectedPlan===p?'active':''}" data-plan="${p}">${p}</button>`).join("")}
+    </div>
+  `;
+}
+
+function wirePlanButtonRows(){
+  document.querySelectorAll("#planRow1 .chip, #planRow2 .chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.selectedPlan = btn.dataset.plan;
+      render();
+    });
+  });
+}
+
+function renderMobileResultsBody(){
+  const dataset = state.datasets[state.selectedDatasetIdx];
+  const { rows: results, account } = buildResults();
+  return `
+    ${renderResultsTable(results, account)}
+    <div class="foot-note">
+      ${dataset.label} 기준 단가표
+    </div>
+    ${state.bugaImages.length ? `
+    <div class="buga-row">
+      ${state.bugaImages.map(src => `<img src="${src}" alt="부가 안내" />`).join("")}
+    </div>` : ""}
+  `;
+}
+
+function renderMobileBody(){
+  const dataset = state.datasets[state.selectedDatasetIdx];
+  const account = resolveAccountForDataset(dataset);
+
+  return `
+    <div class="card">
+      <div class="field">
+        <label>정책 적용일</label>
+        <select id="dateSelect">
+          ${state.datasets.map((d,i) => `<option value="${i}" ${i===state.selectedDatasetIdx?"selected":""}>${d.label}${i===0?" (최신)":""}</option>`).join("")}
+        </select>
+      </div>
+
+      <div class="field">
+        <label>모델명 / 펫네임 검색</label>
+        <input type="text" id="searchInput" placeholder="예: A35, SM-A356N" value="${state.searchText}" />
+      </div>
+
+      ${account && account.gubun === "ALL" ? `
+      <div class="gubun-note">조회할 구분을 선택해 주세요.</div>
+      <div class="plan-row" id="gubunRow">
+        ${GUBUN_LIST.map(g => `<button class="chip ${state.gubunOverride===g?'active':''}" data-gubun="${g}">${g}</button>`).join("")}
+      </div>` : ""}
+
+      ${dataset.quickButtons && dataset.quickButtons.length ? `
+      <div class="field" id="quickRow">
+        <label>주요모델선택</label>
+        <select id="quickSelect">
+          <option value="">주요모델선택</option>
+          ${dataset.quickButtons.map(q => `<option value="${q}" ${state.searchText===q?"selected":""}>${q}</option>`).join("")}
+        </select>
+      </div>` : ""}
+
+      <div class="toolbar">
+        <label style="font-size:12px;font-weight:700;color:var(--text-2)">요금제군선택(필수)</label>
+        <button class="btn" id="groupingBtn" style="margin-bottom:0">요금제 찾기</button>
+      </div>
+      ${renderPlanButtonRows()}
+      <div class="gubun-note">※ 시니어,주니어 요금제일 경우 해당 군에 맞는 요금제군을 선택해 주세요(예시 : 47군_시니어 → 47군 선택)<br><span style="color:red; font-size:15px; font-weight:bold;">※ 액면단가 외 부가정책 필수 확인바랍니다</span></div>
+
+      <div id="mobileResultsBody">${renderMobileResultsBody()}</div>
+    </div>
+  `;
+}
+
+function wireMobileBody(){
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    state.searchText = e.target.value;
+    const container = document.getElementById("mobileResultsBody");
+    if(container){
+      container.innerHTML = renderMobileResultsBody();
+      wireMobileResultsBody();
+    }
+  });
+  document.getElementById("dateSelect").addEventListener("change", (e) => {
+    state.selectedDatasetIdx = parseInt(e.target.value, 10);
+    render();
+  });
+  document.getElementById("groupingBtn").addEventListener("click", () => {
+    state.groupingModalOpen = true;
+    state.groupingQuery = "";
+    state.groupingNotice = "";
+    render();
+  });
+  wirePlanButtonRows();
+  const gubunRow = document.getElementById("gubunRow");
+  if(gubunRow){
+    gubunRow.querySelectorAll(".chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.gubunOverride = btn.dataset.gubun;
+        render();
+      });
+    });
+  }
+  const quickSelect = document.getElementById("quickSelect");
+  if(quickSelect){
+    quickSelect.addEventListener("change", (e) => {
+      if(e.target.value){
+        state.searchText = e.target.value;
+        render();
+      }
+    });
+  }
+  wireMobileResultsBody();
+}
+
+function wireMobileResultsBody(){
+  document.querySelectorAll("#mobileResultsBody .support-trigger").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.supportModal = { model: btn.dataset.model, petName: btn.dataset.pet };
+      render();
+    });
+  });
+}
+
+function renderAllModelsResultsBody(){
+  const dataset = state.datasets[state.selectedDatasetIdx];
+  const { rows: results, account } = buildCategoryResults();
+  return `
+    ${renderCategoryResultsTable(results, account)}
+    <div class="foot-note">
+      ${dataset.label} 기준 단가표
+    </div>
+    ${state.bugaImages.length ? `
+    <div class="buga-row">
+      ${state.bugaImages.map(src => `<img src="${src}" alt="부가 안내" />`).join("")}
+    </div>` : ""}
+  `;
+}
+
+function renderAllModelsBody(){
+  const dataset = state.datasets[state.selectedDatasetIdx];
+  const account = resolveAccountForDataset(dataset);
+
+  return `
+    <div class="card">
+      <div class="field">
+        <label>정책 적용일</label>
+        <select id="allDateSelect">
+          ${state.datasets.map((d,i) => `<option value="${i}" ${i===state.selectedDatasetIdx?"selected":""}>${d.label}${i===0?" (최신)":""}</option>`).join("")}
+        </select>
+      </div>
+
+      ${account && account.gubun === "ALL" ? `
+      <div class="gubun-note">조회할 구분을 선택해 주세요.</div>
+      <div class="plan-row" id="allGubunRow">
+        ${GUBUN_LIST.map(g => `<button class="chip ${state.gubunOverride===g?'active':''}" data-gubun="${g}">${g}</button>`).join("")}
+      </div>` : ""}
+
+      <div class="field">
+        <label>모델 카테고리 선택</label>
+        <div class="plan-row" id="categoryRow">
+          ${CATEGORY_LIST.map(c => `<button class="chip ${state.allModelsCategory===c.key?'active':''}" data-category="${c.key}">${c.label}</button>`).join("")}
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <label style="font-size:12px;font-weight:700;color:var(--text-2)">요금제군선택(필수)</label>
+        <button class="btn" id="allGroupingBtn" style="margin-bottom:0">요금제 찾기</button>
+      </div>
+      ${renderPlanButtonRows()}
+      <div class="gubun-note">※ 시니어,주니어 요금제일 경우 해당 군에 맞는 요금제군을 선택해 주세요(예시 : 47군_시니어 → 47군 선택)<br><span style="color:red; font-size:15px; font-weight:bold;">※ 액면단가 외 부가정책 필수 확인바랍니다</span></div>
+
+      <div id="allModelsResultsBody">${renderAllModelsResultsBody()}</div>
+    </div>
+  `;
+}
+
+function wireAllModelsBody(){
+  document.getElementById("allDateSelect").addEventListener("change", (e) => {
+    state.selectedDatasetIdx = parseInt(e.target.value, 10);
+    render();
+  });
+  document.getElementById("allGroupingBtn").addEventListener("click", () => {
+    state.groupingModalOpen = true;
+    state.groupingQuery = "";
+    state.groupingNotice = "";
+    render();
+  });
+  document.querySelectorAll("#categoryRow .chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.allModelsCategory = btn.dataset.category;
+      render();
+    });
+  });
+  const allGubunRow = document.getElementById("allGubunRow");
+  if(allGubunRow){
+    allGubunRow.querySelectorAll(".chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.gubunOverride = btn.dataset.gubun;
+        render();
+      });
+    });
+  }
+  wirePlanButtonRows();
+  wireAllModelsResultsBody();
+}
+
+function wireAllModelsResultsBody(){
+  document.querySelectorAll("#allModelsResultsBody .support-trigger").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.supportModal = { model: btn.dataset.model, petName: btn.dataset.pet };
+      render();
+    });
+  });
+}
+
+function getReleasePriceForModel(model){
+  const rows = findSupportRowsForModel(model);
+  if(!rows.length) return null;
+  const n = parseInt(rows[0]["출고가"], 10);
+  return isNaN(n) ? null : n;
+}
+
+function renderPriceTable(results){
+  let rowsHtml = "";
+  for(let i = 0; i < results.length; i += 2){
+    const gongsi = results[i];
+    const seonyak = results[i+1];
+    rowsHtml += `
+      <tr class="model-first row-gongsi">
+        <td class="model-name" rowspan="2">${gongsi.model}<div class="model-pet">${gongsi.petName}</div>${(() => { const rp = getReleasePriceForModel(gongsi.model); return rp !== null ? `<div class="model-pet">출고가 ${rp.toLocaleString("ko-KR")}원</div>` : ""; })()}</td>
+        <td class="type-cell"><button type="button" class="type-badge type-gongsi support-trigger" data-model="${gongsi.model}" data-pet="${gongsi.petName}">공시</button></td>
+        <td class="price-cell">${fmtPrice(gongsi.v010)}</td>
+        <td class="price-cell">${fmtPrice(gongsi.vMnp)}</td>
+        <td class="price-cell">${fmtPrice(gongsi.vGibyeon)}</td>
+      </tr>
+      <tr class="row-seonyak">
+        <td class="type-cell"><span class="type-badge type-seonyak">선약</span></td>
+        <td class="price-cell">${fmtPrice(seonyak.v010)}</td>
+        <td class="price-cell">${fmtPrice(seonyak.vMnp)}</td>
+        <td class="price-cell">${fmtPrice(seonyak.vGibyeon)}</td>
+      </tr>
+    `;
+  }
+  return `
+    <table>
+      <thead>
+        <tr>
+          <th>모델명</th><th>유형</th><th>010</th><th>MNP</th><th>기변</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+  `;
+}
+
+function renderResultsTable(results, account){
+  if(account && account.notFound){
+    return `<div class="empty">${account.asOfLabel} 기준 로그인 정보에서 이 계정을 찾을 수 없습니다.</div>`;
+  }
+  if(account && account.gubun === "S"){
+    return `<div class="empty">${account.asOfLabel} 기준으로는 사용이 중지된 구분(S)이라 조회할 수 없습니다.</div>`;
+  }
+  if(account && account.gubun === "ALL" && !state.gubunOverride){
+    return `<div class="empty">위에서 조회할 구분을 먼저 선택해 주세요.</div>`;
+  }
+  if(!state.selectedPlan){
+    return `<div class="empty">요금제 군을 선택해 주세요.</div>`;
+  }
+  if(!state.searchText.trim()){
+    return `<div class="empty">모델명 또는 펫네임을 입력해 주세요.</div>`;
+  }
+  if(results.length === 0){
+    return `<div class="empty">일치하는 모델이 없습니다.</div>`;
+  }
+  return renderPriceTable(results);
+}
+
+function renderCategoryResultsTable(results, account){
+  if(account && account.notFound){
+    return `<div class="empty">${account.asOfLabel} 기준 로그인 정보에서 이 계정을 찾을 수 없습니다.</div>`;
+  }
+  if(account && account.gubun === "S"){
+    return `<div class="empty">${account.asOfLabel} 기준으로는 사용이 중지된 구분(S)이라 조회할 수 없습니다.</div>`;
+  }
+  if(account && account.gubun === "ALL" && !state.gubunOverride){
+    return `<div class="empty">위에서 조회할 구분을 먼저 선택해 주세요.</div>`;
+  }
+  if(!state.selectedPlan){
+    return `<div class="empty">요금제 군을 선택해 주세요.</div>`;
+  }
+  if(!state.allModelsCategory){
+    return `<div class="empty">모델 카테고리를 선택해 주세요.</div>`;
+  }
+  if(results.length === 0){
+    return `<div class="empty">일치하는 모델이 없습니다.</div>`;
+  }
+  return renderPriceTable(results);
+}
+
+function mapGroupToPlan(groupRaw){
+  const g = (groupRaw || "").trim();
+  if(!g) return null;
+  if(/^28군/.test(g)) return "33군미만";
+  const base = g.replace(/_(시니어|주니어)$/, "");
+  return PLAN_LIST.includes(base) ? base : null;
+}
+
+function renderGroupingResultsBody(){
+  const q = state.groupingQuery.trim().toLowerCase();
+  const matches = q
+    ? state.groupingRows.filter(r =>
+        (r["요금제명"] || "").toLowerCase().includes(q) ||
+        (r["요금제군"] || "").toLowerCase().includes(q)
+      ).slice(0, 100)
+    : [];
+  return `
+    ${state.groupingNotice ? `<div class="notice">${state.groupingNotice}</div>` : ""}
+    ${!q ? `<div class="empty">검색어를 입력해 주세요.</div>` : matches.length === 0 ? `<div class="empty">일치하는 요금제가 없습니다.</div>` : `
+    <table>
+      <thead><tr><th>요금제명</th><th>요금제군</th></tr></thead>
+      <tbody>
+        ${matches.map(r => `<tr class="grouping-row" data-group="${r["요금제군"] || ""}"><td style="text-align:left">${r["요금제명"] || ""}</td><td>${r["요금제군"] || ""}</td></tr>`).join("")}
+      </tbody>
+    </table>`}
+  `;
+}
+
+function renderGroupingModal(){
+  return `
+    <div class="modal-overlay" id="groupingOverlay">
+      <div class="modal">
+        <div class="modal-head">
+          <h1>요금제 찾기</h1>
+          <button class="btn btn-ghost" id="groupingCloseBtn">닫기</button>
+        </div>
+        <p class="sub">요금제명 또는 요금제군(예: 130군)으로 검색하세요. 행을 클릭하면 해당 요금제군이 바로 선택됩니다.</p>
+        <div class="field">
+          <input type="text" id="groupingInput" placeholder="예: 구글원 플러스플랜130 또는 130군" value="${state.groupingQuery}" />
+        </div>
+        <div id="groupingResultsBody">${renderGroupingResultsBody()}</div>
+      </div>
+    </div>
+  `;
+}
+
+function wireGroupingResultRows(){
+  document.querySelectorAll("#groupingResultsBody .grouping-row").forEach(tr => {
+    tr.addEventListener("click", () => {
+      const mapped = mapGroupToPlan(tr.dataset.group);
+      if(mapped){
+        state.selectedPlan = mapped;
+        state.groupingModalOpen = false;
+        state.groupingNotice = "";
+        render();
+      } else {
+        state.groupingNotice = "이 요금제군(" + tr.dataset.group + ")은 자동으로 선택할 수 없습니다.";
+        const container = document.getElementById("groupingResultsBody");
+        if(container){
+          container.innerHTML = renderGroupingResultsBody();
+          wireGroupingResultRows();
+        }
+      }
+    });
+  });
+}
+
+function wireGroupingModal(){
+  document.getElementById("groupingCloseBtn").addEventListener("click", () => {
+    state.groupingModalOpen = false;
+    render();
+  });
+  document.getElementById("groupingOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "groupingOverlay"){
+      state.groupingModalOpen = false;
+      render();
+    }
+  });
+  document.getElementById("groupingInput").addEventListener("input", (e) => {
+    state.groupingQuery = e.target.value;
+    state.groupingNotice = "";
+    const container = document.getElementById("groupingResultsBody");
+    if(container){
+      container.innerHTML = renderGroupingResultsBody();
+      wireGroupingResultRows();
+    }
+  });
+  wireGroupingResultRows();
+}
+
+function findSupportRowsForModel(model){
+  const target = (model || "").trim();
+  if(!target) return [];
+  const exact = state.supportData.rows.filter(r => (r["모델명"] || "").trim() === target);
+  if(exact.length) return exact;
+  return state.supportData.rows.filter(r => {
+    const m = (r["모델명"] || "").trim();
+    return m && (m.startsWith(target) || target.startsWith(m));
+  });
+}
+
+function renderSupportModal(){
+  const { model, petName } = state.supportModal;
+  const rows = findSupportRowsForModel(model);
+  const planColumns = state.supportData.planColumns;
+
+  let bodyHtml;
+  if(!rows.length){
+    bodyHtml = `<div class="empty">이 모델의 지원금 정보를 찾을 수 없습니다.</div>`;
+  } else {
+    const groups = {};
+    const order = [];
+    rows.forEach(r => {
+      const key = `${r["모델명"] || ""}__${r["가입유형"] || ""}`;
+      if(!groups[key]){ groups[key] = r; order.push(key); }
+    });
+    bodyHtml = order.map(key => {
+      const row = groups[key];
+      const items = planColumns
+        .map(col => ({ name: col, fee: state.supportData.monthlyFees[col], val: parseInt(row[col], 10) || 0 }))
+        .filter(p => p.val > 0);
+      if(!items.length) return "";
+      const heading = rows.length > (new Set(rows.map(r=>r["가입유형"]))).size
+        ? `${row["모델명"]} · ${row["가입유형"]}`
+        : (row["가입유형"] || "");
+      return `
+        <div class="support-group">
+          <h2>${heading}</h2>
+          <table>
+            <thead><tr><th>요금제명</th><th>월정액</th><th>지원금</th></tr></thead>
+            <tbody>
+              ${items.map(p => `<tr><td style="text-align:left">${p.name}</td><td>${p.fee !== null ? p.fee.toLocaleString("ko-KR") + "원" : "-"}</td><td>${p.val.toLocaleString("ko-KR")}원</td></tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }).join("");
+  }
+
+  const first = rows[0];
+  const priceLine = first ? `<p class="sub">출고가 ${(parseInt(first["출고가"],10)||0).toLocaleString("ko-KR")}원 · ${first["제조사"] || ""}</p>` : "";
+
+  return `
+    <div class="modal-overlay" id="supportOverlay">
+      <div class="modal">
+        <div class="modal-head">
+          <h1>${model}<span style="color:var(--text-2);font-weight:400"> · ${petName || ""}</span></h1>
+          <button class="btn btn-ghost" id="supportCloseBtn">닫기</button>
+        </div>
+        ${priceLine}
+        ${bodyHtml}
+      </div>
+    </div>
+  `;
+}
+
+function wireSupportModal(){
+  document.getElementById("supportCloseBtn").addEventListener("click", () => {
+    state.supportModal = null;
+    render();
+  });
+  document.getElementById("supportOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "supportOverlay"){
+      state.supportModal = null;
+      render();
+    }
+  });
+}
+
+function renderNoticeModal(){
+  const notice = getActiveNotice();
+  if(!notice) return "";
+  const img = notice.image || null;
+  return `
+    <div class="modal-overlay" id="noticeOverlay">
+      <div class="modal" style="background:#FFFFF0">
+        <div class="modal-head">
+          <h1>${notice.title || "오늘의 알림"}</h1>
+          <button class="btn btn-ghost" id="noticeCloseBtn">닫기</button>
+        </div>
+        ${img ? `<img src="${img}" alt="공지 이미지" style="width:100%;border-radius:8px;margin-bottom:14px;display:block" />` : ""}
+        ${notice.content ? `<p class="sub" style="white-space:pre-wrap">${notice.content}</p>` : ""}
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);margin-top:10px;cursor:pointer">
+          <input type="checkbox" id="noticeDismissCheckbox" /> 오늘 하루 보지 않기
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+function wireNoticeModal(){
+  const closeIt = () => {
+    const cb = document.getElementById("noticeDismissCheckbox");
+    if(cb && cb.checked) dismissNoticeToday();
+    state.noticeModalOpen = false;
+    render();
+  };
+  document.getElementById("noticeCloseBtn").addEventListener("click", closeIt);
+  document.getElementById("noticeOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "noticeOverlay") closeIt();
+  });
+}
+
+function setupScrollToTopButton(){
+  const btn = document.createElement("button");
+  btn.id = "scrollTopBtn";
+  btn.type = "button";
+  btn.textContent = "↑ TOP";
+  btn.style.cssText = [
+    "position:fixed", "right:20px", "bottom:20px", "z-index:10000",
+    "padding:10px 18px", "border:none", "border-radius:999px",
+    "background:#2455D0", "color:#fff", "font-weight:700", "font-size:13px",
+    "cursor:pointer", "box-shadow:0 4px 14px rgba(0,0,0,0.25)",
+    "display:none", "font-family:-apple-system,BlinkMacSystemFont,'Pretendard','Segoe UI','Malgun Gothic',sans-serif",
+  ].join(";");
+  btn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.body.appendChild(btn);
+  window.addEventListener("scroll", () => {
+    btn.style.display = window.scrollY > 200 ? "block" : "none";
+  });
+}
+setupScrollToTopButton();
+
+loadFromAppwrite();
+</script>
+</body>
+</html>
