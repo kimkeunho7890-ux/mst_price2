@@ -259,7 +259,7 @@ function matchesCategory(model, category){
 
 // ---- 배포 시 아래 값들을 본인 Appwrite 프로젝트에 맞게 수정하세요 ----
 const APPWRITE_ENDPOINT = "https://api.kim-gwajang.com/v1"; // 예: https://appwrite.example.com/v1
-const APPWRITE_PROJECT_ID = "Y6a83fa550021213835d6";
+const APPWRITE_PROJECT_ID = "6a83fa550021213835d6";
 const APPWRITE_DATABASE_ID = "pricing-site";
 const APPWRITE_ANNOUNCEMENTS_COLLECTION_ID = "announcements";
 // 폴더(버킷) 이름은 기존 GitHub 폴더 구조와 동일하게 만들어두면 코드 수정 없이 그대로 씁니다.
@@ -466,11 +466,11 @@ const databases = new Appwrite.Databases(client);
 const Query = Appwrite.Query;
 
 async function fetchBucketFiles(bucketId){
-  const res = await storage.listFiles({ bucketId });
+  const res = await storage.listFiles(bucketId);
   const entries = (res && res.files) || [];
   const results = [];
   for(const f of entries){
-    const rawUrl = storage.getFileView({ bucketId, fileId: f.$id });
+    const rawUrl = storage.getFileView(bucketId, f.$id);
     const url = String(rawUrl);
     const item = { name: f.name, id: f.$id, url };
     if(/\.csv$/i.test(f.name)){
@@ -565,11 +565,7 @@ const ANNOUNCEMENT_SEEN_KEY = "appwriteLastSeenAnnouncementId";
 
 async function checkLatestAnnouncement(){
   try{
-    const res = await databases.listDocuments({
-      databaseId: APPWRITE_DATABASE_ID,
-      collectionId: APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
-      queries: [Query.orderDesc("$createdAt"), Query.limit(1)],
-    });
+    const res = await databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_ANNOUNCEMENTS_COLLECTION_ID, [Query.orderDesc("$createdAt"), Query.limit(1)]);
     const doc = res && res.documents && res.documents[0];
     if(!doc) return;
     let lastSeenId = null;
@@ -604,11 +600,7 @@ function subscribeAnnouncements(){
 
 async function acknowledgeAnnouncementAndReload(){
   try{
-    const res = await databases.listDocuments({
-      databaseId: APPWRITE_DATABASE_ID,
-      collectionId: APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
-      queries: [Query.orderDesc("$createdAt"), Query.limit(1)],
-    });
+    const res = await databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_ANNOUNCEMENTS_COLLECTION_ID, [Query.orderDesc("$createdAt"), Query.limit(1)]);
     const doc = res && res.documents && res.documents[0];
     if(doc){
       try{ localStorage.setItem(ANNOUNCEMENT_SEEN_KEY, doc.$id); } catch(e){}
