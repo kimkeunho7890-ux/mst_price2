@@ -77,6 +77,11 @@
     flex-shrink:0;line-height:1.3;text-align:center;font-size:12px;
     padding:6px 12px;align-self:flex-end;
   }
+  .date-download-row{flex-wrap:nowrap;}
+  .date-download-row .grow{min-width:0;}
+  @media (max-width:480px){
+    .date-download-row .btn-download{padding:6px 8px;font-size:11px;}
+  }
   .btn-ghost{border-color:transparent;background:transparent;color:var(--text-2);}
   .btn-ghost:hover{background:#ECEDF1;}
 
@@ -1226,10 +1231,10 @@ function renderMobileBody(){
 
   return `
     <div class="card">
-      <div class="toolbar" style="margin-bottom:16px">
+      <div class="toolbar date-download-row" style="margin-bottom:16px">
         <div class="grow field" style="margin-bottom:0">
           <label>정책 적용일</label>
-          <select id="dateSelect">
+          <select id="dateSelect" style="width:100%">
             ${state.datasets.map((d,i) => `<option value="${i}" ${i===state.selectedDatasetIdx?"selected":""}>${d.label}${i===0?" (최신)":""}</option>`).join("")}
           </select>
         </div>
