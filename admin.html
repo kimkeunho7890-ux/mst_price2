@@ -69,7 +69,7 @@
 
 <script>
 // ---- 배포 시 아래 값들을 본인 Appwrite 프로젝트에 맞게 수정하세요 (index.html과 동일해야 합니다) ----
-const APPWRITE_ENDPOINT = "https://api.kim-gwajang.com/v1";
+const APPWRITE_ENDPOINT = "https://api.kim-gwajang.com/v1"; // 예: https://appwrite.example.com/v1
 const APPWRITE_PROJECT_ID = "6a83fa550021213835d6";
 const APPWRITE_DATABASE_ID = "pricing-site";
 const APPWRITE_ANNOUNCEMENTS_COLLECTION_ID = "announcements";
@@ -214,7 +214,7 @@ async function sendAnnouncement(){
       APPWRITE_DATABASE_ID,
       APPWRITE_ANNOUNCEMENTS_COLLECTION_ID,
       ID.unique(),
-      { message: text, createdAt: new Date().toISOString() }
+      { message: text }
     );
     state.noticeStatus = "발송 완료! 접속 중인 사용자에게 알림이 표시됩니다.";
     state.noticeText = "";
