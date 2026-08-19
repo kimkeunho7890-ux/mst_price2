@@ -85,18 +85,18 @@ const APPWRITE_PROJECT_ID = "6a83fa550021213835d6";
 const APPWRITE_DATABASE_ID = "pricing-site";
 const APPWRITE_ANNOUNCEMENTS_COLLECTION_ID = "announcements";
 const BUCKETS = [
-  { key: "login", label: "로그인 파일" },
   { key: "price", label: "단가표" },
-  { key: "grouping", label: "요금제 매칭" },
-  { key: "support", label: "지원금" },
-  { key: "home", label: "유선" },
-  { key: "jungo", label: "중고" },
-  { key: "sono", label: "소노" },
-  { key: "buga", label: "부가 이미지" },
-  { key: "etc", label: "기타" },
-  { key: "notice", label: "공지" },
   { key: "noticeimg", label: "단가표 이미지" },
   { key: "pricefile", label: "단가표 파일" },
+  { key: "login", label: "로그인 파일" },
+  { key: "buga", label: "부가 이미지" },
+  { key: "jungo", label: "중고" },
+  { key: "home", label: "유선" },
+  { key: "sono", label: "소노" },
+  { key: "notice", label: "공지" },
+  { key: "etc", label: "기타" },
+  { key: "support", label: "지원금" },
+  { key: "grouping", label: "요금제 매칭" },
 ];
 
 const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
