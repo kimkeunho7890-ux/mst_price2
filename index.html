@@ -1488,11 +1488,18 @@ function findNoticeImageFile(dataset, gubun){
   return state.noticeImgFiles.find(f => re.test(f.name)) || null;
 }
 
-// "(공지용)통합단가표_20260818" 또는 "...20260818_1400" 둘 다 매칭 — 날짜(YYYYMMDD)만 일치하면 된다.
+// 같은 날짜에 시간까지 다른 여러 파일이 있을 수 있어서(예: _20260819_0000.xlsx, _20260819_1300.xlsx),
+// "날짜_시간"이 정확히 들어간 파일을 항상 먼저 찾고(0000도 포함), 못 찾으면 날짜만 맞는 파일로 대체한다.
 function findPriceDownloadFile(dataset){
   if(!dataset) return null;
-  const dateOnly = dataset.sortKey.slice(0, 8);
-  return state.priceFileList.find(f => f.name.includes(dateOnly)) || null;
+  const sk = dataset.sortKey;
+  const dateOnly = sk.slice(0, 8);
+  const hhmm = sk.slice(8, 12);
+  const candidates = state.priceFileList.filter(f => f.name.includes(dateOnly));
+  if(!candidates.length) return null;
+  const exact = candidates.find(f => f.name.includes(`${dateOnly}_${hhmm}`) || f.name.includes(`${dateOnly}${hhmm}`));
+  if(exact) return exact;
+  return candidates[0];
 }
 
 function downloadNoticeImage(){
