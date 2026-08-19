@@ -379,13 +379,36 @@ function parsePriceCsv(text, fileName){
       quickButtons.push(label);
     }
   });
-  const meta = parseFileName(fileName);
+  return { header, nameToIndex, dataRows, quickButtons };
+}
+
+// 단가표는 날짜별로 여러 개(최대 7개)라 전부 미리 받으면 트래픽이 크다.
+// 목록(파일명/ID)만 먼저 만들어두고, 실제 내용은 그 날짜가 선택될 때만 받는다.
+function buildPriceDatasetMeta(fileEntry){
+  const meta = parseFileName(fileEntry.name);
   return {
-    fileName,
-    label: meta ? meta.label : fileName,
-    sortKey: meta ? meta.sortKey : fileName,
-    header, nameToIndex, dataRows, quickButtons,
+    fileName: fileEntry.name,
+    fileId: fileEntry.id,
+    label: meta ? meta.label : fileEntry.name,
+    sortKey: meta ? meta.sortKey : fileEntry.name,
+    loaded: false,
+    header: null, nameToIndex: null, dataRows: null, quickButtons: null,
   };
+}
+
+async function ensureDatasetLoaded(idx){
+  const ds = state.datasets[idx];
+  if(!ds || ds.loaded) return;
+  const url = storage.getFileView(BUCKETS.price, ds.fileId);
+  const res = await fetch(String(url));
+  if(!res.ok) throw new Error(`${ds.fileName} 파일을 불러오지 못했습니다 (${res.status})`);
+  const text = await res.text();
+  const parsed = parsePriceCsv(text, ds.fileName);
+  ds.header = parsed.header;
+  ds.nameToIndex = parsed.nameToIndex;
+  ds.dataRows = parsed.dataRows;
+  ds.quickButtons = parsed.quickButtons;
+  ds.loaded = true;
 }
 
 function parseLoginCsv(text, fileName){
@@ -517,9 +540,9 @@ async function fetchBucketFileListOnly(bucketId){
 }
 
 async function fetchRawData(){
-  const [loginFiles, priceFiles, groupingFiles, supportFiles, homeFiles, jungoFiles, sonoFiles, bugaFiles, etcFiles, noticeFiles, noticeImgFiles, priceFileList] = await Promise.all([
+  const [loginFiles, priceFileEntries, groupingFiles, supportFiles, homeFiles, jungoFiles, sonoFiles, bugaFiles, etcFiles, noticeFiles, noticeImgFiles, priceFileList] = await Promise.all([
     fetchBucketFiles(BUCKETS.login),
-    fetchBucketFiles(BUCKETS.price),
+    fetchBucketFileListOnly(BUCKETS.price),
     fetchBucketFilesSafe(BUCKETS.grouping),
     fetchBucketFilesSafe(BUCKETS.support),
     fetchBucketFilesSafe(BUCKETS.home),
@@ -531,10 +554,10 @@ async function fetchRawData(){
     fetchBucketFileListOnly(BUCKETS.noticeimg),
     fetchBucketFileListOnly(BUCKETS.pricefile),
   ]);
-  if(!loginFiles.length || !priceFiles.length){
+  if(!loginFiles.length || !priceFileEntries.length){
     throw new Error("login 또는 price 버킷에서 csv 파일을 찾지 못했습니다.");
   }
-  return { loginFiles, priceFiles, groupingFiles, supportFiles, homeFiles, jungoFiles, sonoFiles, bugaFiles, etcFiles, noticeFiles, noticeImgFiles, priceFileList };
+  return { loginFiles, priceFileEntries, groupingFiles, supportFiles, homeFiles, jungoFiles, sonoFiles, bugaFiles, etcFiles, noticeFiles, noticeImgFiles, priceFileList };
 }
 
 // home1.png/home2.png, sono1.png/sono2.png 처럼 끝자리 숫자로 구분되는 파일들을
@@ -554,12 +577,12 @@ function buildVariantImageMap(files){
 function applyRawData(raw){
   const loginResults = raw.loginFiles.map(f => parseLoginCsv(f.text, f.name));
   loginResults.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
-  let priceResults = raw.priceFiles.map(f => parsePriceCsv(f.text, f.name));
-  priceResults.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
-  priceResults = priceResults.slice(0, PRICE_DATASET_LIMIT);
+  let priceMetas = raw.priceFileEntries.map(f => buildPriceDatasetMeta(f));
+  priceMetas.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
+  priceMetas = priceMetas.slice(0, PRICE_DATASET_LIMIT);
 
   state.loginDatasets = loginResults;
-  state.datasets = priceResults;
+  state.datasets = priceMetas;
   state.selectedDatasetIdx = 0;
 
   state.groupingRows = raw.groupingFiles.length ? parseGroupingCsv(raw.groupingFiles[0].text) : [];
@@ -646,6 +669,9 @@ async function loadFromAppwrite(){
   try{
     const raw = await fetchRawData();
     applyRawData(raw);
+    if(state.datasets.length){
+      await ensureDatasetLoaded(0);
+    }
     state.dataReady = true;
     state.dataLoading = false;
     restoreSession();
@@ -667,7 +693,17 @@ function handlePriceFiles(files){
   list.forEach(file => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      results.push(parsePriceCsv(e.target.result, file.name));
+      const parsed = parsePriceCsv(e.target.result, file.name);
+      const meta = parseFileName(file.name);
+      results.push({
+        fileName: file.name,
+        fileId: null,
+        label: meta ? meta.label : file.name,
+        sortKey: meta ? meta.sortKey : file.name,
+        loaded: true,
+        header: parsed.header, nameToIndex: parsed.nameToIndex,
+        dataRows: parsed.dataRows, quickButtons: parsed.quickButtons,
+      });
       remaining--;
       if(remaining === 0){
         results.sort((a,b) => b.sortKey.localeCompare(a.sortKey));
@@ -908,6 +944,7 @@ function computeRowResults(dataset, row, prefix, offset, account, plan){
 function buildResults(){
   const dataset = state.datasets[state.selectedDatasetIdx];
   if(!dataset || !state.session || !state.selectedPlan) return { rows: [], account: null };
+  if(!dataset.loaded) return { rows: [], account: null, dateLoading: true };
   const { account, prefix, needsGubunPick } = resolveEffectivePrefix(dataset);
   if(!account || account.notFound || account.gubun === "S" || needsGubunPick){
     return { rows: [], account, needsGubunPick };
@@ -932,6 +969,7 @@ function buildResults(){
 function buildCategoryResults(){
   const dataset = state.datasets[state.selectedDatasetIdx];
   if(!dataset || !state.session || !state.selectedPlan) return { rows: [], account: null };
+  if(!dataset.loaded) return { rows: [], account: null, dateLoading: true };
   const { account, prefix, needsGubunPick } = resolveEffectivePrefix(dataset);
   if(!account || account.notFound || account.gubun === "S" || needsGubunPick){
     return { rows: [], account, needsGubunPick };
@@ -1212,6 +1250,9 @@ function wirePlanButtonRows(){
 
 function renderMobileResultsBody(){
   const dataset = state.datasets[state.selectedDatasetIdx];
+  if(!dataset.loaded){
+    return `<div class="empty">단가표를 불러오는 중입니다...</div>`;
+  }
   const { rows: results, account } = buildResults();
   return `
     ${renderResultsTable(results, account)}
@@ -1238,7 +1279,7 @@ function renderMobileBody(){
             ${state.datasets.map((d,i) => `<option value="${i}" ${i===state.selectedDatasetIdx?"selected":""}>${d.label}${i===0?" (최신)":""}</option>`).join("")}
           </select>
         </div>
-        <button class="btn btn-download" id="downloadImgBtn">이미지<br>다운</button>
+        <button class="btn btn-download" id="downloadImgBtn" style="${(account && !account.notFound && (account.gubun2 || 0) === 0) ? '' : 'display:none'}">이미지<br>다운</button>
         <button class="btn btn-download" id="downloadFileBtn">파일<br>다운</button>
       </div>
       ${state.downloadError ? `<div class="err">${state.downloadError}</div>` : ""}
@@ -1286,9 +1327,16 @@ function wireMobileBody(){
       wireMobileResultsBody();
     }
   });
-  document.getElementById("dateSelect").addEventListener("change", (e) => {
-    state.selectedDatasetIdx = parseInt(e.target.value, 10);
+  document.getElementById("dateSelect").addEventListener("change", async (e) => {
+    const idx = parseInt(e.target.value, 10);
+    state.selectedDatasetIdx = idx;
     state.downloadError = "";
+    render();
+    try{
+      await ensureDatasetLoaded(idx);
+    } catch(err){
+      state.downloadError = "단가표를 불러오지 못했습니다: " + err.message;
+    }
     render();
   });
   document.getElementById("groupingBtn").addEventListener("click", () => {
@@ -1330,6 +1378,9 @@ function wireMobileResultsBody(){
 
 function renderAllModelsResultsBody(){
   const dataset = state.datasets[state.selectedDatasetIdx];
+  if(!dataset.loaded){
+    return `<div class="empty">단가표를 불러오는 중입니다...</div>`;
+  }
   const { rows: results, account } = buildCategoryResults();
   return `
     ${renderCategoryResultsTable(results, account)}
@@ -1382,8 +1433,15 @@ function renderAllModelsBody(){
 }
 
 function wireAllModelsBody(){
-  document.getElementById("allDateSelect").addEventListener("change", (e) => {
-    state.selectedDatasetIdx = parseInt(e.target.value, 10);
+  document.getElementById("allDateSelect").addEventListener("change", async (e) => {
+    const idx = parseInt(e.target.value, 10);
+    state.selectedDatasetIdx = idx;
+    render();
+    try{
+      await ensureDatasetLoaded(idx);
+    } catch(err){
+      // 결과 영역이 계속 "불러오는 중" 상태로 보일 수 있으니 그대로 재시도 유도
+    }
     render();
   });
   document.getElementById("allGroupingBtn").addEventListener("click", () => {
