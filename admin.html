@@ -86,18 +86,18 @@ const APPWRITE_PROJECT_ID = "6a83fa550021213835d6";
 const APPWRITE_DATABASE_ID = "pricing-site";
 const APPWRITE_ANNOUNCEMENTS_COLLECTION_ID = "announcements";
 const BUCKETS = [
-  { key: "price", label: "단가표" },
-  { key: "noticeimg", label: "단가표 이미지" },
-  { key: "pricefile", label: "단가표 파일" },
-  { key: "login", label: "로그인 파일" },
-  { key: "buga", label: "부가 이미지" },
-  { key: "jungo", label: "중고" },
-  { key: "home", label: "유선" },
-  { key: "sono", label: "소노" },
-  { key: "notice", label: "공지" },
-  { key: "etc", label: "기타" },
-  { key: "support", label: "지원금" },
-  { key: "grouping", label: "요금제 매칭" },
+  { key: "price", label: "단가표", bg: "#EAF0FD", accent: "#2455D0" },
+  { key: "noticeimg", label: "단가표 이미지", bg: "#EAF6FB", accent: "#0E7C9B" },
+  { key: "pricefile", label: "단가표 파일", bg: "#E9F7F1", accent: "#1D8A6C" },
+  { key: "login", label: "로그인 파일", bg: "#FBEAE8", accent: "#C0392B" },
+  { key: "buga", label: "부가 이미지", bg: "#FBF1E1", accent: "#C97A1A" },
+  { key: "jungo", label: "중고", bg: "#F3EBFB", accent: "#7A3FC9" },
+  { key: "home", label: "유선", bg: "#FDEAF3", accent: "#C22E7A" },
+  { key: "sono", label: "소노", bg: "#EFF3FB", accent: "#3F5FA8" },
+  { key: "notice", label: "공지", bg: "#FFF6E0", accent: "#B98900" },
+  { key: "etc", label: "기타", bg: "#F1F2F4", accent: "#5B616E" },
+  { key: "support", label: "지원금", bg: "#EAF9EF", accent: "#238C4D" },
+  { key: "grouping", label: "요금제 매칭", bg: "#F0EDFB", accent: "#5B3FB0" },
 ];
 
 const client = new Appwrite.Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
@@ -300,9 +300,9 @@ function renderBucketCard(b){
   }
 
   return `
-    <div class="bucket-card">
+    <div class="bucket-card" style="background:${b.bg};border-color:${b.accent}22">
       <div class="bucket-card-head">
-        <h2>${b.label}</h2>
+        <h2 style="color:${b.accent}">${b.label}</h2>
         <span class="bucket-count">${files ? files.length + "개" : ""}</span>
       </div>
       <div class="file-drop-small">
