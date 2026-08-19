@@ -63,14 +63,15 @@
     border:1.5px dashed var(--border-strong);border-radius:8px;padding:10px;background:#FAFBFC;
   }
   .file-drop-small input{font-size:12px;width:100%;}
-  .file-list{list-style:none;margin:0;padding:0;font-size:12px;max-height:220px;overflow-y:auto;}
+  .file-list{list-style:none;margin:0;padding:0;font-size:12px;max-height:280px;overflow-y:auto;}
   .file-list li{
-    display:flex;align-items:center;justify-content:space-between;gap:8px;
-    padding:7px 0;border-bottom:1px solid var(--border);
+    display:flex;flex-direction:column;gap:5px;
+    padding:8px 0;border-bottom:1px solid var(--border);
   }
   .file-list li:last-child{border-bottom:none;}
-  .file-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
-  .file-meta{color:var(--text-3);font-family:var(--mono);font-size:11px;flex-shrink:0;}
+  .file-name{word-break:break-all;font-weight:600;line-height:1.35;}
+  .file-row-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .file-meta{color:var(--text-3);font-family:var(--mono);font-size:11px;}
   .empty-small{color:var(--text-3);font-size:12px;padding:8px 0;}
   .spinner-note{font-size:12px;color:var(--text-2);}
 </style>
@@ -287,9 +288,11 @@ function renderBucketCard(b){
       <ul class="file-list">
         ${files.map(f => `
           <li>
-            <span class="file-name" title="${f.name}">${f.name}</span>
-            <span class="file-meta">${fmtSize(getFileSize(f))} · ${fmtDate(f.$createdAt)}</span>
-            <button class="btn btn-danger" data-delete-bucket="${b.key}" data-delete-file="${f.$id}">삭제</button>
+            <span class="file-name">${f.name}</span>
+            <div class="file-row-meta">
+              <span class="file-meta">${fmtSize(getFileSize(f))} · ${fmtDate(f.$createdAt)}</span>
+              <button class="btn btn-danger" data-delete-bucket="${b.key}" data-delete-file="${f.$id}">삭제</button>
+            </div>
           </li>
         `).join("")}
       </ul>
