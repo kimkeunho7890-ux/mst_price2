@@ -1498,7 +1498,26 @@ function findPriceDownloadFile(dataset){
   return state.priceFileList.find(f => f.name.includes(`${dateOnly}_${hhmm}`) || f.name.includes(`${dateOnly}${hhmm}`)) || null;
 }
 
-function downloadNoticeImage(){
+// 파일명 끝의 "_A", "_C1" 같은 구분 알파벳을 떼어낸다 (확장자는 유지).
+function stripGubunSuffix(filename){
+  return filename.replace(/_(?:C1|D1|E1|[A-E])(\.[A-Za-z0-9]+)$/, "$1");
+}
+
+async function triggerBlobDownload(url, filename){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("다운로드에 실패했습니다 (상태 " + res.status + ")");
+  const blob = await res.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+}
+
+async function downloadNoticeImage(){
   state.downloadError = "";
   const dataset = state.datasets[state.selectedDatasetIdx];
   const { account, prefix } = resolveEffectivePrefix(dataset);
@@ -1510,7 +1529,13 @@ function downloadNoticeImage(){
     return;
   }
   const url = storage.getFileDownload(BUCKETS.noticeimg, file.id);
-  window.open(String(url), "_blank");
+  const filename = (account && account.gubun !== "ALL") ? stripGubunSuffix(file.name) : file.name;
+  try{
+    await triggerBlobDownload(String(url), filename);
+  } catch(err){
+    state.downloadError = "다운로드에 실패했습니다: " + err.message;
+    render();
+  }
 }
 
 function downloadPriceFile(){
