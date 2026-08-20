@@ -105,6 +105,24 @@ const account = new Appwrite.Account(client);
 const storage = new Appwrite.Storage(client);
 const databases = new Appwrite.Databases(client);
 const ID = Appwrite.ID;
+const Query = Appwrite.Query;
+
+// Appwrite는 한 번에 기본 25개까지만 돌려주므로, 커서로 끝까지 이어받아 전체 목록을 모은다.
+// 최신 업로드가 위로 오도록 $createdAt 내림차순으로 정렬해서 가져온다.
+async function listAllFiles(bucketId){
+  let all = [];
+  let cursor = null;
+  while(true){
+    const queries = [Query.orderDesc("$createdAt"), Query.limit(100)];
+    if(cursor) queries.push(Query.cursorAfter(cursor));
+    const res = await storage.listFiles(bucketId, queries);
+    const files = (res && res.files) || [];
+    all = all.concat(files);
+    if(files.length < 100) break;
+    cursor = files[files.length - 1].$id;
+  }
+  return all;
+}
 
 let state = {
   screen: "login",
@@ -178,8 +196,7 @@ async function loadBucketFiles(bucketId){
   state.bucketErrors[bucketId] = "";
   render();
   try{
-    const res = await storage.listFiles(bucketId);
-    state.filesByBucket[bucketId] = (res && res.files) || [];
+    state.filesByBucket[bucketId] = await listAllFiles(bucketId);
   } catch(e){
     state.bucketErrors[bucketId] = "목록을 불러오지 못했습니다: " + (e.message || e);
   }
