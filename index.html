@@ -1478,14 +1478,20 @@ function wireAllModelsResultsBody(){
   });
 }
 
-// "08월18일 이후_공지_A" 또는 "07월27일 1600 이후_공지_A" 둘 다 매칭 —
-// 시각(HHMM)은 있어도 없어도 되고, 월/일 + 구분(A~E1)만 정확히 맞으면 된다.
+// "08월19일 이후_공지_A" 와 "08월19일 1300 이후_공지_A"처럼 같은 날짜에 시간만 다른
+// 파일이 여러 개 있을 수 있어서, 정책 적용일의 시각(HHMM)까지 정확히 맞는 파일을 먼저 찾고,
+// 없으면 월/일 + 구분만 맞는 파일로 대체한다.
 function findNoticeImageFile(dataset, gubun){
   if(!dataset || !gubun) return null;
   const sk = dataset.sortKey;
-  const mm = sk.slice(4,6), dd = sk.slice(6,8);
-  const re = new RegExp(`^${mm}월${dd}일(?:\\s*\\d{3,4})?\\s*이후_공지_${gubun}(?:[^0-9A-Za-z]|$)`);
-  return state.noticeImgFiles.find(f => re.test(f.name)) || null;
+  const mm = sk.slice(4,6), dd = sk.slice(6,8), hhmm = sk.slice(8,12);
+  const genericRe = new RegExp(`^${mm}월${dd}일(?:\\s*\\d{3,4})?\\s*이후_공지_${gubun}(?:[^0-9A-Za-z]|$)`);
+  const candidates = state.noticeImgFiles.filter(f => genericRe.test(f.name));
+  if(!candidates.length) return null;
+  const exactRe = new RegExp(`^${mm}월${dd}일\\s*${hhmm}\\s*이후_공지_${gubun}(?:[^0-9A-Za-z]|$)`);
+  const exact = candidates.find(f => exactRe.test(f.name));
+  if(exact) return exact;
+  return candidates[0];
 }
 
 // 같은 날짜에 시간까지 다른 여러 파일이 있을 수 있어서(예: _20260819_0000.xlsx, _20260819_1300.xlsx),
