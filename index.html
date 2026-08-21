@@ -143,6 +143,25 @@
   .chip.quick-chip{border-color:#E8C48A;color:var(--amber);background:var(--amber-bg);}
   .chip.quick-chip:hover{border-color:var(--amber);}
   .chip.quick-chip.active{background:var(--amber);border-color:var(--amber);color:#fff;}
+  .addon-toggle-row{display:flex;gap:22px;flex-wrap:nowrap;margin-bottom:20px;}
+  .addon-toggle-item{
+    flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;
+    cursor:pointer;padding:4px 2px;
+  }
+  .toggle-switch{
+    width:36px;height:20px;border-radius:999px;background:var(--border-strong);
+    position:relative;flex-shrink:0;transition:background .15s;
+  }
+  .toggle-switch.on{background:var(--accent);}
+  .toggle-knob{
+    position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+    background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.25);
+  }
+  .toggle-switch.on .toggle-knob{left:18px;}
+  .addon-label{
+    font-size:10px;font-weight:600;color:var(--text-2);text-align:center;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+  }
 
   @media (max-width: 600px){
     #planRow1, #planRow2{ flex-wrap:nowrap; gap:3px; }
@@ -150,6 +169,7 @@
       flex:1 1 0; min-width:0; padding:5px 0;
       font-size:10px; text-align:center; white-space:nowrap;
     }
+    .addon-toggle-row{ gap:8px; }
   }
 
   .empty{
@@ -311,6 +331,12 @@ let state = {
   noticeImgFiles: [],
   priceFileList: [],
   downloadError: "",
+  addonToggles: {
+    "교보문고sam+구글원": true,
+    "V컬러링음악감상플러스+벨링콘텐츠팩": true,
+    "폰교체패스": true,
+    "안심패스": false,
+  },
 };
 
 function excelSub(str){
@@ -358,17 +384,30 @@ function stripBom(s){
   return s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s;
 }
 
+// 앞쪽 고정 컬럼: 운영여부, 버튼, 교보문고, V컬러링, 폰교체패스, 안심패스, 안심패스on, 모델요약, 모델, 펫네임 = 10칸
+const PRICE_FIXED_COL_COUNT = 10;
+// 교보문고/V컬러링은 단순 on/off 토글. 폰교체패스/안심패스는 서로 연동되는 특수 쌍이라 별도 처리(아래 computeRowResults 참고).
+const ADDON_LIST = [
+  { name: "교보문고sam+구글원", idx: 2 },
+  { name: "V컬러링음악감상플러스+벨링콘텐츠팩", idx: 3 },
+  { name: "폰교체패스", idx: 4 },
+  { name: "안심패스", idx: 5 },
+];
+const ADDON_SIMPLE = ["교보문고sam+구글원", "V컬러링음악감상플러스+벨링콘텐츠팩"];
+const ADDON_PHONE_PASS_IDX = 4;   // 폰교체패스 컬럼 (OFF일 때 더함)
+const ADDON_SAFE_PASS_ON_IDX = 6; // 안심패스on 컬럼 (안심패스가 ON일 때 더함)
+
 function parsePriceCsv(text, fileName){
   const parsed = Papa.parse(stripBom(text), { skipEmptyLines: false });
   const rows = parsed.data;
   const line1 = rows[0] || [];
   const line3 = rows[2] || [];
-  const header = line1.map((v, i) => (i < 5 ? (line3[i] || "") : (v || "")));
+  const header = line1.map((v, i) => (i < PRICE_FIXED_COL_COUNT ? (line3[i] || "") : (v || "")));
   const nameToIndex = {};
   header.forEach((h, i) => {
     if(h && h !== "-" && !(h in nameToIndex)) nameToIndex[h] = i;
   });
-  const allRows = rows.slice(3).filter(r => r && r.length > 4 && (r[2] || r[3] || r[4]));
+  const allRows = rows.slice(3).filter(r => r && r.length > 9 && (r[7] || r[8] || r[9]));
   const dataRows = allRows.filter(r => (r[0] || "").trim() === "1");
   const quickButtons = [];
   const seenQuick = new Set();
@@ -926,8 +965,28 @@ function resolveEffectivePrefix(dataset){
 }
 
 function computeRowResults(dataset, row, prefix, offset, account, plan){
-  const model = row[3] || "";
-  const petName = row[4] || "";
+  const model = row[8] || "";
+  const petName = row[9] || "";
+  // 교보문고/V컬러링: 단순 on(0)/off(컬럼값 더함)
+  let addonExtra = ADDON_SIMPLE.reduce((sum, name) => {
+    if(state.addonToggles[name] === false){
+      const idx = ADDON_LIST.find(a => a.name === name).idx;
+      const v = parseInt(row[idx], 10);
+      if(!isNaN(v)) sum += v;
+    }
+    return sum;
+  }, 0);
+  // 폰교체패스/안심패스: 서로 연동되는 특수 쌍
+  // - 안심패스 ON  → "안심패스on" 컬럼 값을 더함 (폰교체패스는 무시)
+  // - 안심패스 OFF, 폰교체패스 OFF → "폰교체패스" 컬럼 값을 더함
+  // - 안심패스 OFF, 폰교체패스 ON  → 아무것도 안 더함
+  if(state.addonToggles["안심패스"] === true){
+    const v = parseInt(row[ADDON_SAFE_PASS_ON_IDX], 10);
+    if(!isNaN(v)) addonExtra += v;
+  } else if(state.addonToggles["폰교체패스"] === false){
+    const v = parseInt(row[ADDON_PHONE_PASS_IDX], 10);
+    if(!isNaN(v)) addonExtra += v;
+  }
   const out = [];
   ["공시","선약"].forEach(type => {
     const v010 = getColValue(dataset, row, prefix, type, plan, "010");
@@ -935,7 +994,7 @@ function computeRowResults(dataset, row, prefix, offset, account, plan){
     const vGibyeon = getColValue(dataset, row, prefix, type, plan, "기변");
     const applyAdj = (v, suffix) => {
       if(v === null) return null;
-      let result = v + offset;
+      let result = v + offset + addonExtra;
       if(account.extraTargets && account.extraTargets.length){
         const target = account.extraTargets.find(t => t.model === model.trim() && matchesScopeToken(t.scope, type, suffix));
         if(target){
@@ -970,9 +1029,9 @@ function buildResults(){
   const out = [];
   dataset.dataRows.forEach(row => {
     const quickLabel = row[1] || "";
-    const modelSummary = row[2] || "";
-    const model = row[3] || "";
-    const petName = row[4] || "";
+    const modelSummary = row[7] || "";
+    const model = row[8] || "";
+    const petName = row[9] || "";
     const hay = (model + " " + petName + " " + modelSummary + " " + quickLabel).toLowerCase();
     if(!hay.includes(q)) return;
     out.push(...computeRowResults(dataset, row, prefix, offset, account, plan));
@@ -993,7 +1052,7 @@ function buildCategoryResults(){
   const plan = state.selectedPlan;
   const out = [];
   dataset.dataRows.forEach(row => {
-    const model = row[3] || "";
+    const model = row[8] || "";
     if(!matchesCategory(model, state.allModelsCategory)) return;
     out.push(...computeRowResults(dataset, row, prefix, offset, account, plan));
   });
@@ -1262,6 +1321,50 @@ function wirePlanButtonRows(){
   });
 }
 
+const ADDON_SHORT_LABEL = {
+  "교보문고sam+구글원": "교보문고팩",
+  "V컬러링음악감상플러스+벨링콘텐츠팩": "V컬러링팩",
+  "폰교체패스": "교체패스",
+  "안심패스": "안심패스",
+};
+
+function renderAddonRow(){
+  return `
+    <div class="field">
+      <label>부가서비스</label>
+      <div class="addon-toggle-row" id="addonRow">
+        ${ADDON_LIST.map(a => {
+          const on = state.addonToggles[a.name] !== false;
+          return `
+            <div class="addon-toggle-item" data-addon="${a.name}">
+              <span class="toggle-switch ${on ? 'on' : ''}"><span class="toggle-knob"></span></span>
+              <span class="addon-label">${ADDON_SHORT_LABEL[a.name] || a.name}</span>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function wireAddonRow(){
+  const row = document.getElementById("addonRow");
+  if(!row) return;
+  row.querySelectorAll(".addon-toggle-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const name = btn.dataset.addon;
+      const newValue = !(state.addonToggles[name] !== false);
+      state.addonToggles[name] = newValue;
+      // 폰교체패스와 안심패스는 동시에 ON일 수 없다 (동시에 OFF는 가능).
+      if(newValue === true){
+        if(name === "안심패스") state.addonToggles["폰교체패스"] = false;
+        if(name === "폰교체패스") state.addonToggles["안심패스"] = false;
+      }
+      render();
+    });
+  });
+}
+
 function renderMobileResultsBody(){
   const dataset = state.datasets[state.selectedDatasetIdx];
   if(!dataset.loaded){
@@ -1324,6 +1427,7 @@ function renderMobileBody(){
       </div>
       ${renderPlanButtonRows()}
       <div class="gubun-note">※ 시니어,주니어 요금제일 경우 해당 군에 맞는 요금제군을 선택해 주세요(예시 : 47군_시니어 → 47군 선택)<br><span style="color:red; font-size:15px; font-weight:bold;">※ 액면단가 외 부가정책 필수 확인바랍니다</span></div>
+      ${renderAddonRow()}
 
       <div id="mobileResultsBody">${renderMobileResultsBody()}</div>
     </div>
@@ -1360,6 +1464,7 @@ function wireMobileBody(){
     render();
   });
   wirePlanButtonRows();
+  wireAddonRow();
   const gubunRow = document.getElementById("gubunRow");
   if(gubunRow){
     gubunRow.querySelectorAll(".chip").forEach(btn => {
@@ -1440,6 +1545,7 @@ function renderAllModelsBody(){
       </div>
       ${renderPlanButtonRows()}
       <div class="gubun-note">※ 시니어,주니어 요금제일 경우 해당 군에 맞는 요금제군을 선택해 주세요(예시 : 47군_시니어 → 47군 선택)<br><span style="color:red; font-size:15px; font-weight:bold;">※ 액면단가 외 부가정책 필수 확인바랍니다</span></div>
+      ${renderAddonRow()}
 
       <div id="allModelsResultsBody">${renderAllModelsResultsBody()}</div>
     </div>
@@ -1480,6 +1586,7 @@ function wireAllModelsBody(){
     });
   }
   wirePlanButtonRows();
+  wireAddonRow();
   wireAllModelsResultsBody();
 }
 
