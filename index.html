@@ -501,9 +501,24 @@ const storage = new Appwrite.Storage(client);
 const databases = new Appwrite.Databases(client);
 const Query = Appwrite.Query;
 
+// Appwrite는 한 번에 기본 25개까지만 돌려주므로, 커서로 끝까지 이어받아 전체 목록을 모은다.
+async function listAllFilesInBucket(bucketId){
+  let all = [];
+  let cursor = null;
+  while(true){
+    const queries = [Query.limit(100)];
+    if(cursor) queries.push(Query.cursorAfter(cursor));
+    const res = await storage.listFiles(bucketId, queries);
+    const files = (res && res.files) || [];
+    all = all.concat(files);
+    if(files.length < 100) break;
+    cursor = files[files.length - 1].$id;
+  }
+  return all;
+}
+
 async function fetchBucketFiles(bucketId){
-  const res = await storage.listFiles(bucketId);
-  const entries = (res && res.files) || [];
+  const entries = await listAllFilesInBucket(bucketId);
   const results = [];
   for(const f of entries){
     const rawUrl = storage.getFileView(bucketId, f.$id);
@@ -531,8 +546,7 @@ async function fetchBucketFilesSafe(bucketId){
 // 사용자가 다운로드 버튼을 누를 때만 받아온다 (불필요한 트래픽 방지).
 async function fetchBucketFileListOnly(bucketId){
   try{
-    const res = await storage.listFiles(bucketId);
-    const entries = (res && res.files) || [];
+    const entries = await listAllFilesInBucket(bucketId);
     return entries.map(f => ({ name: f.name, id: f.$id }));
   } catch(e){
     return [];
