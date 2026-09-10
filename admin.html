@@ -284,11 +284,18 @@ async function sendAnnouncement(){
 
 function render(){
   const app = document.getElementById("app");
+  // 전체 다시 그리기 때문에 스크롤 위치가 리셋되는 걸 막기 위해, 그리기 전에 저장했다가 그린 뒤 복원한다.
+  const pageScrollY = window.scrollY;
+  const listScrollTops = Array.from(app.querySelectorAll(".file-list")).map(el => el.scrollTop);
   if(state.screen === "login"){
     renderLogin(app);
   } else {
     renderPanel(app);
   }
+  window.scrollTo(0, pageScrollY);
+  app.querySelectorAll(".file-list").forEach((el, i) => {
+    if(listScrollTops[i] != null) el.scrollTop = listScrollTops[i];
+  });
 }
 
 function renderLogin(app){
