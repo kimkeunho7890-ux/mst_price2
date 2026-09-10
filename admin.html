@@ -73,6 +73,8 @@
   .file-row-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .file-meta{color:var(--text-3);font-family:var(--mono);font-size:11px;}
   .empty-small{color:var(--text-3);font-size:12px;padding:8px 0;}
+  .select-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .select-all-label{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-2);cursor:pointer;font-weight:600;}
   .spinner-note{font-size:12px;color:var(--text-2);}
 </style>
 </head>
@@ -132,6 +134,7 @@ let state = {
   loadingBuckets: {},
   bucketErrors: {},
   uploadingBuckets: {},
+  selectedFiles: {},
   noticeText: "",
   noticeStatus: "",
 };
@@ -237,6 +240,28 @@ async function deleteFile(bucketId, fileId){
   }
 }
 
+function getSelectedFileIds(bucketId){
+  const sel = state.selectedFiles[bucketId] || {};
+  return Object.keys(sel).filter(id => sel[id]);
+}
+
+async function bulkDeleteFiles(bucketId){
+  const ids = getSelectedFileIds(bucketId);
+  if(!ids.length) return;
+  if(!confirm(`선택한 ${ids.length}개 파일을 삭제하시겠어요? 되돌릴 수 없습니다.`)) return;
+  state.bucketErrors[bucketId] = "";
+  try{
+    for(const fileId of ids){
+      await storage.deleteFile(bucketId, fileId);
+    }
+    state.selectedFiles[bucketId] = {};
+    await loadBucketFiles(bucketId);
+  } catch(e){
+    state.bucketErrors[bucketId] = "선택 삭제 중 오류가 발생했습니다: " + (e.message || e);
+    render();
+  }
+}
+
 async function sendAnnouncement(){
   const text = state.noticeText.trim();
   if(!text) return;
@@ -294,6 +319,9 @@ function renderBucketCard(b){
   const loading = state.loadingBuckets[b.key];
   const uploading = state.uploadingBuckets[b.key];
   const error = state.bucketErrors[b.key];
+  const selected = state.selectedFiles[b.key] || {};
+  const selectedCount = Object.keys(selected).filter(id => selected[id]).length;
+  const allSelected = files && files.length > 0 && files.every(f => selected[f.$id]);
 
   let bodyHtml;
   if(loading && !files){
@@ -302,10 +330,19 @@ function renderBucketCard(b){
     bodyHtml = `<div class="empty-small">파일이 없습니다.</div>`;
   } else {
     bodyHtml = `
+      <div class="select-bar">
+        <label class="select-all-label">
+          <input type="checkbox" class="select-all-checkbox" data-bucket="${b.key}" ${allSelected ? "checked" : ""} /> 전체선택
+        </label>
+        ${selectedCount > 0 ? `<button class="btn btn-danger" data-bulk-delete="${b.key}">선택 삭제 (${selectedCount})</button>` : ""}
+      </div>
       <ul class="file-list">
         ${files.map(f => `
           <li>
-            <span class="file-name">${f.name}</span>
+            <div style="display:flex;align-items:flex-start;gap:8px;">
+              <input type="checkbox" class="file-checkbox" data-bucket="${b.key}" data-file="${f.$id}" ${selected[f.$id] ? "checked" : ""} style="margin-top:3px;flex-shrink:0;" />
+              <span class="file-name">${f.name}</span>
+            </div>
             <div class="file-row-meta">
               <span class="file-meta">${fmtSize(getFileSize(f))} · ${fmtDate(f.$createdAt)}</span>
               <button class="btn btn-danger" data-delete-bucket="${b.key}" data-delete-file="${f.$id}">삭제</button>
@@ -374,6 +411,34 @@ function renderPanel(app){
   document.querySelectorAll("[data-delete-file]").forEach(btn => {
     btn.addEventListener("click", () => {
       deleteFile(btn.dataset.deleteBucket, btn.dataset.deleteFile);
+    });
+  });
+
+  document.querySelectorAll(".file-checkbox").forEach(cb => {
+    cb.addEventListener("change", (e) => {
+      const bucketId = cb.dataset.bucket;
+      const fileId = cb.dataset.file;
+      if(!state.selectedFiles[bucketId]) state.selectedFiles[bucketId] = {};
+      state.selectedFiles[bucketId][fileId] = e.target.checked;
+      render();
+    });
+  });
+
+  document.querySelectorAll(".select-all-checkbox").forEach(cb => {
+    cb.addEventListener("change", (e) => {
+      const bucketId = cb.dataset.bucket;
+      const files = state.filesByBucket[bucketId] || [];
+      const checked = e.target.checked;
+      const sel = {};
+      files.forEach(f => { sel[f.$id] = checked; });
+      state.selectedFiles[bucketId] = sel;
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-bulk-delete]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      bulkDeleteFiles(btn.dataset.bulkDelete);
     });
   });
 }
