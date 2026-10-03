@@ -247,6 +247,15 @@
   .support-trigger{cursor:pointer;border:none;}
   .support-trigger:hover{opacity:0.8;}
   .gubun-note{font-size:12px;color:var(--text-2);margin-bottom:8px;}
+  .price-file-list{list-style:none;margin:0;padding:0;max-height:min(60vh,420px);overflow-y:auto;}
+  .price-file-list li{border-bottom:1px solid var(--border);}
+  .price-file-list li:last-child{border-bottom:none;}
+  .price-file-item{
+    width:100%;text-align:left;background:none;border:none;padding:12px 4px;
+    font-size:14px;color:var(--text);cursor:pointer;font-family:var(--sans);
+    word-break:break-all;
+  }
+  .price-file-item:hover{color:var(--accent);background:#FAFBFC;}
 
   .buga-row{display:flex;flex-direction:column;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
   .buga-row img{width:100%;border-radius:8px;border:1px solid var(--border);display:block;}
@@ -330,6 +339,7 @@ let state = {
   etcImages: [],
   notice: null,
   noticeModalOpen: false,
+  priceListModalOpen: false,
   noticeImgFiles: [],
   priceFileList: [],
   downloadError: "",
@@ -1246,6 +1256,7 @@ function renderSearch(app){
     ${state.groupingModalOpen ? renderGroupingModal() : ""}
     ${state.supportModal ? renderSupportModal() : ""}
     ${state.noticeModalOpen ? renderNoticeModal() : ""}
+    ${state.priceListModalOpen ? renderPriceListModal() : ""}
     ${state.updateAvailable ? renderUpdateModal() : ""}
   `;
 
@@ -1274,6 +1285,9 @@ function renderSearch(app){
   }
   if(state.noticeModalOpen){
     wireNoticeModal();
+  }
+  if(state.priceListModalOpen){
+    wirePriceListModal();
   }
 }
 
@@ -1391,6 +1405,7 @@ function renderMobileBody(){
 
   return `
     <div class="card">
+      <button class="btn" id="priceListBtn" style="margin-bottom:10px">📋 단가표리스트 (지난 단가표 보기)</button>
       <div class="toolbar date-download-row" style="margin-bottom:16px">
         <div class="grow field" style="margin-bottom:0">
           <label>정책 적용일</label>
@@ -1437,6 +1452,10 @@ function renderMobileBody(){
 }
 
 function wireMobileBody(){
+  document.getElementById("priceListBtn").addEventListener("click", () => {
+    state.priceListModalOpen = true;
+    render();
+  });
   document.getElementById("downloadImgBtn").addEventListener("click", downloadNoticeImage);
   document.getElementById("downloadFileBtn").addEventListener("click", downloadPriceFile);
   document.getElementById("searchInput").addEventListener("input", (e) => {
@@ -1672,6 +1691,59 @@ function downloadPriceFile(){
   }
   const url = storage.getFileDownload(BUCKETS.pricefile, file.id);
   window.open(String(url), "_blank");
+}
+
+// 파일명 안의 날짜(_시간)를 뽑아서 정렬용 키로 만든다. 못 찾으면 맨 뒤로 보낸다.
+function extractDateKeyFromFileName(name){
+  const m = name.match(/(\d{8})_?(\d{4})?/);
+  if(!m) return "";
+  return m[1] + (m[2] || "0000");
+}
+
+function getSortedPriceFileList(){
+  return state.priceFileList
+    .slice()
+    .sort((a, b) => extractDateKeyFromFileName(b.name).localeCompare(extractDateKeyFromFileName(a.name)));
+}
+
+function downloadPriceFileById(fileId){
+  const url = storage.getFileDownload(BUCKETS.pricefile, fileId);
+  window.open(String(url), "_blank");
+}
+
+function renderPriceListModal(){
+  const files = getSortedPriceFileList();
+  return `
+    <div class="modal-overlay" id="priceListOverlay">
+      <div class="modal">
+        <div class="modal-head">
+          <h1>단가표리스트</h1>
+          <button class="btn btn-ghost" id="priceListCloseBtn">닫기</button>
+        </div>
+        <p class="sub">등록된 단가표 파일 목록입니다 (최신순). 클릭하면 바로 다운로드됩니다.</p>
+        ${files.length === 0 ? `<div class="empty">등록된 단가표 파일이 없습니다.</div>` : `
+        <ul class="price-file-list">
+          ${files.map(f => `<li><button type="button" class="price-file-item" data-file-id="${f.id}">${f.name}</button></li>`).join("")}
+        </ul>`}
+      </div>
+    </div>
+  `;
+}
+
+function wirePriceListModal(){
+  const closeIt = () => {
+    state.priceListModalOpen = false;
+    render();
+  };
+  document.getElementById("priceListCloseBtn").addEventListener("click", closeIt);
+  document.getElementById("priceListOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "priceListOverlay") closeIt();
+  });
+  document.querySelectorAll(".price-file-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      downloadPriceFileById(btn.dataset.fileId);
+    });
+  });
 }
 
 function getReleasePriceForModel(model){
