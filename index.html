@@ -264,6 +264,10 @@
   .support-group h2{font-size:13px;color:var(--text-2);margin-bottom:8px;}
   .grouping-row{cursor:pointer;}
   .grouping-row:hover td{background:var(--accent-bg);}
+.ended-wrap{position:relative;overflow:hidden;border-radius:8px}
+.ended-wrap img{filter:grayscale(.6) brightness(.85)}
+.ended-mark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.ended-mark span{transform:rotate(-25deg);font-size:clamp(34px,13vw,84px);font-weight:900;color:rgba(220,38,38,.55);border:.08em solid rgba(220,38,38,.55);border-radius:.15em;padding:.05em .3em;letter-spacing:.05em;white-space:nowrap;background:rgba(255,255,255,.25)}
 </style>
 </head>
 <body>
@@ -652,9 +656,15 @@ function applyRawData(raw){
 
   state.groupingRows = raw.groupingFiles.length ? parseGroupingCsv(raw.groupingFiles[0].text) : [];
   state.supportData = raw.supportFiles.length ? parseSupportCsv(raw.supportFiles[0].text) : { rows: [], planColumns: [], monthlyFees: {} };
-  state.images = {
-    used: raw.jungoFiles.length ? raw.jungoFiles[0].url : null,
-  };
+  // jungo.png, jungo1.png, jungo2.png ... : 숫자가 클수록 최신. 숫자 없는 jungo.png는 0번(가장 오래된 것)으로 본다.
+  state.usedImages = raw.jungoFiles
+    .map(f => {
+      const m = f.name.match(/^jungo\s*(\d*)\.(png|jpe?g|webp|gif)$/i);
+      return m ? { url: f.url, num: m[1] ? parseInt(m[1], 10) : 0 } : null;
+    })
+    .filter(Boolean)
+    .sort((x, y) => y.num - x.num);
+  state.images = {};
   state.wiredVariants = buildVariantImageMap(raw.homeFiles);
   state.sonoVariants = buildVariantImageMap(raw.sonoFiles);
   state.bugaImages = raw.bugaFiles
@@ -1309,6 +1319,15 @@ function renderStaticTabBody(tabKey, account){
       return `<div class="card"><div class="empty">${labels[tabKey]} 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
     }
     return `<div class="card"><img loading="lazy" decoding="async" src="${img}" alt="${labels[tabKey]} 정책" style="width:100%;border-radius:8px;display:block" /></div>`;
+  }
+  if(tabKey === "used"){
+    if(!state.usedImages || !state.usedImages.length){
+      return `<div class="card"><div class="empty">중고 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
+    }
+    return state.usedImages.map((it, i) => i === 0
+      ? `<div class="card"><img loading="lazy" decoding="async" src="${it.url}" alt="중고 정책" style="width:100%;border-radius:8px;display:block" /></div>`
+      : `<div class="card"><div class="ended-wrap"><img loading="lazy" decoding="async" src="${it.url}" alt="중고 정책(종료)" style="width:100%;border-radius:8px;display:block" /><div class="ended-mark"><span>정책종료</span></div></div></div>`
+    ).join("");
   }
   const img = state.images[tabKey];
   if(!img){
