@@ -314,6 +314,7 @@ const BUCKETS = {
 };
 
 let state = {
+  usedShowAll: false,
   screen: "login",
   loginDatasets: [],
   datasets: [],
@@ -1281,6 +1282,16 @@ function renderSearch(app){
     });
   });
 
+  const usedMoreBtn = document.getElementById("usedMoreBtn");
+  if(usedMoreBtn){
+    usedMoreBtn.addEventListener("click", () => {
+      const y = window.scrollY;
+      state.usedShowAll = true;
+      render();
+      window.scrollTo(0, y);
+    });
+  }
+
   if(state.mainTab === "mobile"){
     wireMobileBody();
   }
@@ -1324,10 +1335,19 @@ function renderStaticTabBody(tabKey, account){
     if(!state.usedImages || !state.usedImages.length){
       return `<div class="card"><div class="empty">중고 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
     }
-    return state.usedImages.map((it, i) => i === 0
+    // 최신 1개 + 직전 종료 이미지까지 합쳐서 3개만 먼저 보여주고, 나머지는 "더보기"로 펼친다.
+    const USED_VISIBLE = 3;
+    const list = state.usedImages;
+    const shown = state.usedShowAll ? list : list.slice(0, USED_VISIBLE);
+    const cards = shown.map((it, i) => i === 0
       ? `<div class="card"><img loading="lazy" decoding="async" src="${it.url}" alt="중고 정책" style="width:100%;border-radius:8px;display:block" /></div>`
       : `<div class="card"><div class="ended-wrap"><img loading="lazy" decoding="async" src="${it.url}" alt="중고 정책(종료)" style="width:100%;border-radius:8px;display:block" /><div class="ended-mark"><span>정책종료</span></div></div></div>`
     ).join("");
+    const rest = list.length - USED_VISIBLE;
+    const moreBtn = (!state.usedShowAll && rest > 0)
+      ? `<button class="btn btn-ghost" id="usedMoreBtn" style="width:100%;margin:4px 0 12px">이전 종료 정책 더보기 (${rest}개)</button>`
+      : "";
+    return cards + moreBtn;
   }
   const img = state.images[tabKey];
   if(!img){
