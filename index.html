@@ -315,6 +315,8 @@ const BUCKETS = {
 
 let state = {
   usedShowAll: false,
+  wiredShowAll: false,
+  wiredLists: {},
   screen: "login",
   loginDatasets: [],
   datasets: [],
@@ -667,6 +669,15 @@ function applyRawData(raw){
     .sort((x, y) => y.num - x.num);
   state.images = {};
   state.wiredVariants = buildVariantImageMap(raw.homeFiles);
+  // home1-1.png, home1-2.png, home2-1.png ... : 앞 숫자 = 유선 구분(1/2), 뒤 숫자 = 버전(클수록 최신).
+  // 예전 방식의 home1.png / home2.png 는 버전 0(가장 오래된 것)으로 취급한다.
+  state.wiredLists = {};
+  raw.homeFiles.forEach(f => {
+    const m = f.name.match(/^home\s*(\d+)(?:\s*-\s*(\d+))?\.(png|jpe?g|webp|gif)$/i);
+    if(!m) return;
+    (state.wiredLists[m[1]] = state.wiredLists[m[1]] || []).push({ url: f.url, num: m[2] ? parseInt(m[2], 10) : 0 });
+  });
+  Object.keys(state.wiredLists).forEach(k => state.wiredLists[k].sort((x, y) => y.num - x.num));
   state.sonoVariants = buildVariantImageMap(raw.sonoFiles);
   state.bugaImages = raw.bugaFiles
     .sort((a,b) => a.name.localeCompare(b.name))
@@ -1282,15 +1293,14 @@ function renderSearch(app){
     });
   });
 
-  const usedMoreBtn = document.getElementById("usedMoreBtn");
-  if(usedMoreBtn){
-    usedMoreBtn.addEventListener("click", () => {
+  document.querySelectorAll("[data-more-key]").forEach(btn => {
+    btn.addEventListener("click", () => {
       const y = window.scrollY;
-      state.usedShowAll = true;
+      state[btn.dataset.moreKey + "ShowAll"] = true;
       render();
       window.scrollTo(0, y);
     });
-  }
+  });
 
   if(state.mainTab === "mobile"){
     wireMobileBody();
@@ -1312,6 +1322,22 @@ function renderSearch(app){
   }
 }
 
+// 최신 1개는 그대로, 나머지는 "정책종료" 워터마크. 처음엔 3개(최신+종료 2개)만 보이고 나머지는 더보기 버튼으로 펼친다.
+function renderEndedImageList(list, label, key){
+  const VISIBLE = 3;
+  const showAll = !!state[key + "ShowAll"];
+  const shown = showAll ? list : list.slice(0, VISIBLE);
+  const cards = shown.map((it, i) => i === 0
+    ? `<div class="card"><img loading="lazy" decoding="async" src="${it.url}" alt="${label} 정책" style="width:100%;border-radius:8px;display:block" /></div>`
+    : `<div class="card"><div class="ended-wrap"><img loading="lazy" decoding="async" src="${it.url}" alt="${label} 정책(종료)" style="width:100%;border-radius:8px;display:block" /><div class="ended-mark"><span>정책종료</span></div></div></div>`
+  ).join("");
+  const rest = list.length - VISIBLE;
+  const moreBtn = (!showAll && rest > 0)
+    ? `<button class="btn btn-ghost" data-more-key="${key}" style="width:100%;margin:4px 0 12px">이전 종료 정책 더보기 (${rest}개)</button>`
+    : "";
+  return cards + moreBtn;
+}
+
 function renderStaticTabBody(tabKey, account){
   const labels = { wired: "유선", used: "중고", sono: "소노", etc: "기타" };
   if(tabKey === "etc"){
@@ -1324,6 +1350,9 @@ function renderStaticTabBody(tabKey, account){
   }
   if(tabKey === "wired" || tabKey === "sono"){
     const indicator = account && !account.notFound ? (tabKey === "wired" ? account.wired : account.sono) : "";
+    if(tabKey === "wired" && indicator && state.wiredLists[indicator] && state.wiredLists[indicator].length){
+      return renderEndedImageList(state.wiredLists[indicator], "유선", "wired");
+    }
     const variants = tabKey === "wired" ? state.wiredVariants : state.sonoVariants;
     const img = indicator ? variants[indicator] : null;
     if(!img){
@@ -1335,19 +1364,7 @@ function renderStaticTabBody(tabKey, account){
     if(!state.usedImages || !state.usedImages.length){
       return `<div class="card"><div class="empty">중고 정책 이미지가 아직 등록되지 않았습니다.</div></div>`;
     }
-    // 최신 1개 + 직전 종료 이미지까지 합쳐서 3개만 먼저 보여주고, 나머지는 "더보기"로 펼친다.
-    const USED_VISIBLE = 3;
-    const list = state.usedImages;
-    const shown = state.usedShowAll ? list : list.slice(0, USED_VISIBLE);
-    const cards = shown.map((it, i) => i === 0
-      ? `<div class="card"><img loading="lazy" decoding="async" src="${it.url}" alt="중고 정책" style="width:100%;border-radius:8px;display:block" /></div>`
-      : `<div class="card"><div class="ended-wrap"><img loading="lazy" decoding="async" src="${it.url}" alt="중고 정책(종료)" style="width:100%;border-radius:8px;display:block" /><div class="ended-mark"><span>정책종료</span></div></div></div>`
-    ).join("");
-    const rest = list.length - USED_VISIBLE;
-    const moreBtn = (!state.usedShowAll && rest > 0)
-      ? `<button class="btn btn-ghost" id="usedMoreBtn" style="width:100%;margin:4px 0 12px">이전 종료 정책 더보기 (${rest}개)</button>`
-      : "";
-    return cards + moreBtn;
+    return renderEndedImageList(state.usedImages, "중고", "used");
   }
   const img = state.images[tabKey];
   if(!img){
