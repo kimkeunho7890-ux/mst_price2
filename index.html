@@ -1322,9 +1322,9 @@ function renderSearch(app){
   }
 }
 
-// 최신 1개는 그대로, 나머지는 "정책종료" 워터마크. 처음엔 3개(최신+종료 2개)만 보이고 나머지는 더보기 버튼으로 펼친다.
-function renderEndedImageList(list, label, key){
-  const VISIBLE = 3;
+// 최신 1개는 그대로, 나머지는 "정책종료" 워터마크. 처음엔 visibleCount개(기본 3, 유선은 1)만 보이고 나머지는 더보기 버튼으로 펼친다.
+function renderEndedImageList(list, label, key, visibleCount){
+  const VISIBLE = visibleCount || 3;
   const showAll = !!state[key + "ShowAll"];
   const shown = showAll ? list : list.slice(0, VISIBLE);
   const cards = shown.map((it, i) => i === 0
@@ -1351,7 +1351,7 @@ function renderStaticTabBody(tabKey, account){
   if(tabKey === "wired" || tabKey === "sono"){
     const indicator = account && !account.notFound ? (tabKey === "wired" ? account.wired : account.sono) : "";
     if(tabKey === "wired" && indicator && state.wiredLists[indicator] && state.wiredLists[indicator].length){
-      return renderEndedImageList(state.wiredLists[indicator], "유선", "wired");
+      return renderEndedImageList(state.wiredLists[indicator], "유선", "wired", 1);
     }
     const variants = tabKey === "wired" ? state.wiredVariants : state.sonoVariants;
     const img = indicator ? variants[indicator] : null;
